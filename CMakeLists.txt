@@ -13,20 +13,16 @@ endif()
 find_package(OpenGL REQUIRED)
 find_package(GLU REQUIRED)
 find_package(GLUT REQUIRED)
-find_package(glfw3 REQUIRED)
-find_package(GLEW REQUIRED)
-find_package(glm REQUIRED)
-include_directories(${OPENGL_INCLUDE_DIRS} ${GLUT_INCLUDE_DIRS} ${GLU_INCLUDE_DIRS} ${GLFW_INCLUDE_DIRS})
+include_directories(${OPENGL_INCLUDE_DIRS} ${GLUT_INCLUDE_DIRS} ${GLU_INCLUDE_DIRS})
 
 # OpenCV
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
-file(GLOB_RECURSE My_Source_Files ${PROJECT_SOURCE_DIR}/src/main2.cpp)
-add_executable(${PROJECT_NAME} ${My_Source_Files})
+add_executable(${PROJECT_NAME} ${PROJECT_SOURCE_DIR}/src/main.cpp)
 
 target_link_libraries(${PROJECT_NAME}
     -lpthread -lm
-    ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${GLU_LIBRARIES} glfw glm
+    ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${GLU_LIBRARIES}
     ${OpenCV_LIBS}
 )
