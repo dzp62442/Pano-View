@@ -1,12 +1,13 @@
 cmake_minimum_required(VERSION 3.10)
 project(pano-view)
 
-set(CMAKE_CXX_STANDARD 11)
-# set(GL_LIBS
-#     "/usr/lib/aarch64-linux-gnu/libGL.so"
-#     "/usr/lib/aarch64-linux-gnu/libGLU.so"
-#     "/usr/lib/aarch64-linux-gnu/libglut.so"
-# )
+add_compile_options(-std=c++14)
+set(CMAKE_CXX_STANDARD 14)
+if (NOT CMAKE_BUILD_TYPE)
+    # Options: Debug, Release, MinSizeRel, RelWithDebInfo
+    set(CMAKE_BUILD_TYPE "Release")
+    message(STATUS "No build type selected, default to ${CMAKE_BUILD_TYPE}")
+endif()
 
 # OpenGL
 find_package(OpenGL REQUIRED)

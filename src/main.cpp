@@ -8,12 +8,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <exception>
 #include <GL/glut.h>
-//#include <GL/glew.h>
-//#include <GLFW/glfw3.h>
-//#include "glm/glm.hpp"
 #include <string>
-#define  pi 3.141592654
-#define PI 3.14159265359
 
 //! 全局变量
 time_t start;
@@ -45,8 +40,6 @@ void init(void)
     glCullFace(GL_FRONT);    //背面裁剪(背面不可见)
     glEnable(GL_CULL_FACE);    //启用裁剪
     glEnable(GL_TEXTURE_2D);
-    //loadGLTexture2();    //载入纹理贴图
-    //loadTexture("../20221101_2D_0.mp4",texName[0]);
     
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);//所读取的图像数据的行对齐方式
 
@@ -55,9 +48,9 @@ void init(void)
     {
         for( int j=180; j>=0; j-=6)
         {
-            vertex[i/6][(180-j)/6][0] = cos((float)i/180.0*pi)*sin((float)j/180.0*pi)*2;
-            vertex[i/6][(180-j)/6][1] = cos((float)j/180.0*pi)*2;
-            vertex[i/6][(180-j)/6][2] = sin((float)i/180.0*pi)*sin((float)j/180.0*pi)*2;
+            vertex[i/6][(180-j)/6][0] = cos((float)i/180.0*CV_PI)*sin((float)j/180.0*CV_PI)*2;
+            vertex[i/6][(180-j)/6][1] = cos((float)j/180.0*CV_PI)*2;
+            vertex[i/6][(180-j)/6][2] = sin((float)i/180.0*CV_PI)*sin((float)j/180.0*CV_PI)*2;
         }
     }
     for(int i=0; i<61; i++)
@@ -77,11 +70,10 @@ void init(void)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 }
 
-void loadTexture(const char* filename,GLuint &texture)
+void loadTexture(const std::string &filename, GLuint &texture)
 {
     cv::Mat frame;
-    // frame = imread("../panorama_1227_5.jpg");
-    frame = cv::imread("../resources/total.bmp");
+    frame = cv::imread(filename);
     int ImageWidth = frame.cols;
     int ImageHeight = frame.rows;
     flip(frame, frame, 0);
@@ -194,10 +186,6 @@ void onMouseMove(int x, int y)
     } else if (xangle > -90 && y < cy) {//往上拉
         xangle += ((y - cy) * offset);
     }
-    //printf("Move: x=%d(%d)[%d], y=%d(%d)[%d], xangle_Textures=%f, yangle_Textures=%f\n",
-    //    x, cx_Textures, x-cx_Textures,
-    //    y, cy_Textures, y-cy_Textures,
-    //    xangle_Textures, yangle_Textures);
     glutPostRedisplay();
 
     //保存好当前拖放后光标坐标点
@@ -230,14 +218,14 @@ void keyboard(unsigned char key,int x,int y)
             break;
         case 'w':
         case 'W':
-            Ox -= step*sin(direction / 180 * PI);
-            Oy -= step*cos(direction / 180 * PI);
+            Ox -= step*sin(direction / 180 * CV_PI);
+            Oy -= step*cos(direction / 180 * CV_PI);
             glutPostRedisplay();
             break;
         case 's':
         case 'S':
-            Ox += step*sin(direction/180*PI);
-            Oy += step*cos(direction/180*PI);
+            Ox += step*sin(direction / 180 *CV_PI);
+            Oy += step*cos(direction / 180 *CV_PI);
             glutPostRedisplay();
             break;
         case 'a':
@@ -250,12 +238,6 @@ void keyboard(unsigned char key,int x,int y)
             direction = direction + 2;
             glutPostRedisplay();
             break;
-        //case 'z':
-        //    zangle += 1.0f;
-        //    break;
-        //case 'Z':
-        //    zangle -= 1.0f;
-        //    break;
         default:
             return;
     }
@@ -293,17 +275,8 @@ void specialKey(int key, int x, int y)
 }
 
 int main(int argc, char *argv[])
-{   
-    
-    cap.open("../resources/20221105_2D_0.mp4");
-    if (!cap.isOpened() ){
-        printf("Cannot open the video");
-        exit(0);
-    }
-    Width = (int)cap.get(cv::CAP_PROP_FRAME_WIDTH);
-    Height = (int)cap.get(cv::CAP_PROP_FRAME_HEIGHT);
-
-    //printf("可通过↑↓←→按键控制全景图绕旋转\n");
+{
+    printf("可通过↑↓←→按键控制全景图绕旋转\n");
     glutInit(&argc, argv);    //固定格式
     glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE);
     glutInitWindowSize(800, 800);    //显示框的大小
@@ -322,8 +295,6 @@ int main(int argc, char *argv[])
     glutSpecialFunc(specialKey); // 特殊按键
 
     glutMainLoop();
-
-    cap.release();
 
     return 0;
 }
