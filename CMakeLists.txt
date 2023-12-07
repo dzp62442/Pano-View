@@ -14,6 +14,8 @@ find_package(OpenGL REQUIRED)
 find_package(GLU REQUIRED)
 find_package(GLUT REQUIRED)
 find_package(glfw3 REQUIRED)
+find_package(GLEW REQUIRED)
+find_package(glm REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIRS} ${GLUT_INCLUDE_DIRS} ${GLU_INCLUDE_DIRS} ${GLFW_INCLUDE_DIRS})
 
 # OpenCV
@@ -25,6 +27,6 @@ add_executable(${PROJECT_NAME} ${My_Source_Files})
 
 target_link_libraries(${PROJECT_NAME}
     -lpthread -lm
-    ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${GLU_LIBRARIES} glfw
+    ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${GLU_LIBRARIES} glfw glm
     ${OpenCV_LIBS}
 )
