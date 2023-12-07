@@ -22,7 +22,7 @@ include_directories(${OPENGL_INCLUDE_DIRS} ${GLUT_INCLUDE_DIRS} ${GLU_INCLUDE_DI
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
-file(GLOB_RECURSE My_Source_Files ${PROJECT_SOURCE_DIR}/src/main2.cpp)
+file(GLOB_RECURSE My_Source_Files ${PROJECT_SOURCE_DIR}/src/*.cpp)
 add_executable(${PROJECT_NAME} ${My_Source_Files})
 
 target_link_libraries(${PROJECT_NAME}
