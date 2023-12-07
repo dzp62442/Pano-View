@@ -1,0 +1,14 @@
+video_start: 5  # 视频读取起始帧
+video_stop: 100  # 视频读取结束帧
+
+video_dir: ../insta360/scene1/
+
+cbowl:  # 碗模型参数
+  disk_radius: 0.4  # 碗顶半径？默认0.4
+  parab_radius: 0.7  # 该值越大，碗底面越小？默认0.55
+  hole_radius: 0.13  # 碗底洞口半径，默认0.08
+  a: 0.4  # 默认0.4
+  b: 0.4  # 默认0.4
+  c: 0.2  # 默认0.2，可选0.25
+  vertices_num: 750  # 默认750
+  y_start: 1.0  # 此处y轴指天，碗模型从坐标1开始
