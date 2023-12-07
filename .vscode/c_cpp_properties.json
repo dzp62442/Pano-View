@@ -6,8 +6,8 @@
                 "${workspaceFolder}/**",
                 "/usr/include/**",
                 "/usr/include/aarch64-linux-gnu/**",
-                "/usr/local/include/opencv4",
-                "/usr/local/include/opencv4/opencv2"
+                "/usr/local/include/opencv4/**",
+                "/usr/local/include/opencv4/opencv2/**"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
