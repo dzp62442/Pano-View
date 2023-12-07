@@ -44,7 +44,7 @@ private:
         OGLBuffer OGLbowl;
         OGLBuffer OGLblackRect;
         OGLBuffer OGLquadrender;
-        float aspect_ratio;
+        float aspect_ratio;  // 窗口宽高比
         int32  wnd_width;
         int32  wnd_height;
         CUDA_OGL cuOgl;
