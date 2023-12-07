@@ -31,16 +31,9 @@ public:
     }
 
     //参数
-    // 读取相机时：cameraSize 为启动相机的尺寸，dataSize 为用于拼接的尺寸，通常需要程序中进行 resize
-    // 读取视频时：cameraSize 和 dataSize 均为视频图片的尺寸，程序中不需要进行 resize
-    int cam_width = 1280;
-    int cam_height = 720;
-    int data_width = 1280;
-    int data_height = 720;
-    int gl_width = data_width;
-    int gl_height = data_height;
+    int gl_width = 1280;
+    int gl_height = 720;
     int num_pool_threads = 8;  // threadpool线程数
-    float scale_factor = 1;
     int video_start;
     int video_stop;
     std::string win1 = "Cam0"; // window name

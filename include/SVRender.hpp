@@ -23,7 +23,7 @@ protected:
 public:  
        bool getInit() const{return isInit;}
        bool addModel(const std::string& pathmodel, const std::string& pathvertshader,
-                     const std::string& pathfragshader, const glm::mat4& mat_transform);
+                     const std::string& pathfragshader);
        float getWhiteLuminance() const{return white_luminance;}
        void setWhiteLuminance(const float white_luminance_) {white_luminance = white_luminance_;}
        float getToneLuminance() const{return tonemap_luminance;}

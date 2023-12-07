@@ -158,7 +158,7 @@ void SVRender::drawScreen(const Camera& cam)
 
 
 bool SVRender::addModel(const std::string& pathmodel, const std::string& pathvertshader,
-              const std::string& pathfragshader, const glm::mat4& mat_transform)
+              const std::string& pathfragshader)
 {
     bool res = pathmodel.empty() || pathvertshader.empty() || pathfragshader.empty();
     if (res){
@@ -182,7 +182,16 @@ bool SVRender::addModel(const std::string& pathmodel, const std::string& pathver
     }
 
     models.emplace_back(std::move(m));
-    modeltranformations.emplace_back(mat_transform);
+
+    // 调整车身位姿
+    glm::mat4 transform_car(1.f);
+    // 此处y轴指天，将车模型放在碗模型的地面中央
+    transform_car = glm::translate(transform_car, glm::vec3(0.f, 1.01f, 0.f));
+    // 控制车身旋转，采用旋转角+旋转轴表示，此处z轴指天
+    transform_car = glm::rotate(transform_car, glm::radians(-80.f), glm::vec3(0.f, 1.f, 0.f));  // 调节绕y轴旋转角度来控制车身朝向
+    // 控制车身缩放，默认0.002
+    transform_car = glm::scale(transform_car, glm::vec3(0.1f));
+    modeltranformations.emplace_back(transform_car);
 
     return true;
 }
