@@ -43,7 +43,7 @@ bool SVRender::init(const ConfigBowl& cbowl, const std::string& shadersurroundve
                     const std::string shaderblackrectvert, const std::string shaderblackrectfrag)
 {
     if (isInit)
-            return isInit;
+        return isInit;
 
     aspect_ratio = static_cast<float>(wnd_width) / wnd_height;
 

@@ -4,7 +4,6 @@
 #include <Bowl.hpp>
 #include <Virtcam.hpp>
 #include <Model.hpp>
-
 #include <SVCudaOGL.hpp>
 
 

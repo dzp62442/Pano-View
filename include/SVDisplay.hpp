@@ -19,36 +19,31 @@ class SVDisplayView
 {
 private:
 	GLFWwindow* window;
-        int32 width, height;
-        float aspect_ratio;
-        std::shared_ptr<SVRender> disp_view;
-        bool isInit;
-        bool useDemoSurroundView, useDemoTopView;
+    int32 width = 0, height = 0;
+    float aspect_ratio;
+    std::shared_ptr<SVRender> renderer;
+    bool isInit = false;
+    bool useDemoSurroundView = false, useDemoTopView = false;
 
 protected:
-        void demoSVMode(Camera& camera);
-        void demoTVMode(Camera& camera);
-public:
-        SVDisplayView() : window(nullptr), disp_view(nullptr)
-        {
-            width = 0;
-            height = 0;
-            isInit = false;
-            useDemoSurroundView = useDemoTopView = false;
-        }
-
-        ~SVDisplayView(){glfwTerminate();}
-
-        bool init(const int32 wnd_width, const int32 wnd_height, std::shared_ptr<SVRender> scene_view);
-
-        bool render(const cv::cuda::GpuMat& frame);
+    void demoSVMode(Camera& camera);
+    void demoTVMode(Camera& camera);
 
 public:
-        void setSVMode(const bool demo);
-        bool getSVMode() const;
-        void setTVMode(const bool topview);
-        bool getTVMode() const;
-        void resetCameraState();
+    // 构造函数
+    SVDisplayView() : window(nullptr), renderer(nullptr) {}
+    ~SVDisplayView() { glfwTerminate(); }
+
+public:
+    bool init(const int32 wnd_width, const int32 wnd_height, std::shared_ptr<SVRender> renderer_);
+
+    bool render(const cv::cuda::GpuMat& frame);
+
+    void setSVMode(const bool demo);
+    bool getSVMode() const;
+    void setTVMode(const bool topview);
+    bool getTVMode() const;
+    void resetCameraState();
 };
 
 
