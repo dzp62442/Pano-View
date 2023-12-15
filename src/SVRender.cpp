@@ -24,10 +24,8 @@ bool SVRender::init(const ConfigBowl& cbowl, const std::string& shadersurroundve
     if (!initBowl(cbowl, shadersurroundvert, shadersurroundfrag))
         return false;
 
-    if (!shaderblackrectvert.empty() && !shaderblackrectfrag.empty()){
-        if (!initbowlBlackRect(shaderblackrectvert, shaderblackrectfrag))
-          return false;
-    }
+    if (!initbowlBlackRect(shaderblackrectvert, shaderblackrectfrag))
+        return false;
 
     if (!initQuadRender(shaderscreenvert, shaderscreenfrag))
         return false;
@@ -113,7 +111,7 @@ bool SVRender::initQuadRender(const std::string& shaderscreenvert, const std::st
     if (!OGLquadrender.OGLShader.initShader(shaderscreenvert.c_str(), shaderscreenfrag.c_str())) {  // 传入顶点和片段着色器的路径，用于初始化着色器
         LOG_ERROR("SVRender::initQuadRender", "OGLquadrender.OGLShader.initShader Error !");
         return false;
-    }   
+    }
 
     // 定义一个二维四边形（quad）的顶点数据，四个顶点，每个顶点包含位置(x,y)和纹理坐标(u,v)
     constexpr float quadvert[] = {
@@ -136,53 +134,53 @@ bool SVRender::initQuadRender(const std::string& shaderscreenvert, const std::st
     glGenFramebuffers(1, &OGLquadrender.framebuffer);  // 生成一个新的帧缓冲对象，并将其ID存储在 OGLquadrender.framebuffer 中
     glBindFramebuffer(GL_FRAMEBUFFER, OGLquadrender.framebuffer);  // 将之前创建的帧缓冲对象绑定为当前活动的帧缓冲对象
 
-    glGenTextures(1, &OGLquadrender.framebuffer_tex);
-    glBindTexture(GL_TEXTURE_2D, OGLquadrender.framebuffer_tex);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, wnd_width, wnd_height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, OGLquadrender.framebuffer_tex, 0);
+    glGenTextures(1, &OGLquadrender.framebuffer_tex);  // 生成一个新的纹理对象用于存储图像数据，并将其ID存储在 OGLquadrender.framebuffer_tex 中
+    glBindTexture(GL_TEXTURE_2D, OGLquadrender.framebuffer_tex);  // 将新创建的纹理对象绑定为当前活动的2D纹理对象，之后对2D纹理的操作都会应用到这个纹理对象上
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, wnd_width, wnd_height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);  // 使用 glTexImage2D 分配纹理图像的内存，此处纹理暂时没有数据
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);  // 设置纹理过滤参数，当纹理被缩小时使用线性过滤
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);  // 设置纹理过滤参数，当纹理被放大时使用线性过滤
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, OGLquadrender.framebuffer_tex, 0);  // 将纹理附加到帧缓冲对象的颜色附件上，意味着任何渲染到这个帧缓冲对象的内容都会被写入到这个纹理中
 
-    glGenRenderbuffers(1, &OGLquadrender.renderbuffer);
-    glBindRenderbuffer(GL_RENDERBUFFER, OGLquadrender.renderbuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, wnd_width, wnd_height);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, OGLquadrender.renderbuffer);
+    glGenRenderbuffers(1, &OGLquadrender.renderbuffer);  // 生成一个新的渲染缓冲对象，并将其ID存储在 OGLquadrender.renderbuffer 中
+    glBindRenderbuffer(GL_RENDERBUFFER, OGLquadrender.renderbuffer);  // 将新创建的渲染缓冲对象绑定为当前活动的渲染缓冲对象，之后对渲染缓冲对象的操作都会应用到这个对象上
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, wnd_width, wnd_height);  // 为渲染缓冲对象分配存储空间，指定了存储格式为 GL_DEPTH24_STENCIL8，同时包含了24位的深度信息和8位的模板信息
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, OGLquadrender.renderbuffer);  // 将渲染缓冲对象作为深度和模板附件连接到帧缓冲对象上，使帧缓冲对象具备了存储深度和模板信息的能力
 
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)  // 检查当前绑定的帧缓冲对象的状态
       return false;
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);  //将当前绑定的帧缓冲对象解绑，回到默认的帧缓冲对象
 
     return true;
 }
 
-bool SVRender::addModel(const std::string& pathmodel, const std::string& pathvertshader,
-              const std::string& pathfragshader)
+// 加载车辆3D模型，初始化相应的着色器，并设置模型的变换
+bool SVRender::addModel(const std::string& pathmodel, const std::string& pathvertshader, const std::string& pathfragshader)
 {
-    bool res = pathmodel.empty() || pathvertshader.empty() || pathfragshader.empty();
-    if (res){
-      std::cerr << "Error: empty path to model\n";
-      return false;
+    if (pathmodel.empty() || pathvertshader.empty() || pathfragshader.empty()) {
+        LOG_ERROR("SVRender::addModel", "Empty path to model");
+        return false;
     }
 
+    // 加载车辆3D模型文件
     Model m(pathmodel);
-    res = m.getModelInit();
-    if (!res){
-      std::cerr << "Error: fail load model from path\n";
-      return false;
+    if (!m.getModelInit()) {
+        LOG_ERROR("SVRender::addModel", "Fail load model from path");
+        return false;
     }
 
+    // 初始化着色器并添加到着色器列表中
     modelshaders.emplace_back(std::make_shared<Shader>());
     auto last_idx = modelshaders.size() - 1;
-    res = modelshaders[last_idx]->initShader(pathvertshader.c_str(), pathfragshader.c_str());
-    if (!res){
-      std::cerr << "Error: fail init shaders for load model\n";
-      return false;
+    if (!modelshaders[last_idx]->initShader(pathvertshader.c_str(), pathfragshader.c_str())) {
+        LOG_ERROR("SVRender::addModel", "Fail init shaders for load model");
+        return false;
     }
 
+    // 添加模型到模型列表中
     models.emplace_back(std::move(m));
 
-    // 调整车身位姿
+    // 设置模型变换并添加到变换列表中
     glm::mat4 transform_car(1.f);
     // 此处y轴指天，将车模型放在碗模型的地面中央
     transform_car = glm::translate(transform_car, glm::vec3(0.f, 1.01f, 0.f));
@@ -196,121 +194,120 @@ bool SVRender::addModel(const std::string& pathmodel, const std::string& pathver
 }
 
 //! --------------------------------------  渲染  --------------------------------------
-
 void SVRender::render(const Camera& cam, const cv::cuda::GpuMat& frame)
 {
-    // render command
-    // ...
-    glEnable(GL_DEPTH_TEST);
-    glBindFramebuffer(GL_FRAMEBUFFER, OGLquadrender.framebuffer); // bind scene framebuffer
-    glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);  // 绘制之前启用深度测试，以正确处理遮挡关系
+    glBindFramebuffer(GL_FRAMEBUFFER, OGLquadrender.framebuffer); // 绑定帧缓冲对象，所有渲染命令将渲染到这个帧缓冲而不是默认的帧缓冲（即屏幕）
+    glClearColor(0.2f, 0.2f, 0.2f, 1.0f);  // 设置清除颜色为灰色
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  // 清除颜色缓冲和深度缓冲
 
     drawSurroundView(cam, frame);
 
-    // drawBlackRect(cam);
+    drawBlackRect(cam);
 
     drawModel(cam);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0); // bind default framebuffer
-    glDisable(GL_DEPTH_TEST);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0); // 绑定回默认的帧缓冲对象，准备将内容渲染到屏幕上
+    glDisable(GL_DEPTH_TEST);  // 禁用深度测试，这通常在渲染2D内容或后期处理时进行
 
-    drawScreen(cam);
+    drawScreen(cam);  // 将之前渲染到自定义帧缓冲的内容绘制到屏幕上
 
-    // unbound
+    // 解绑任何可能绑定的顶点数组和顶点缓冲对象
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }
 
+// 使用 cv::cuda::GpuMat 对象准备纹理
 void SVRender::texturePrepare(const cv::cuda::GpuMat& frame)
 {
-    if (!texReady){
+    if (!texReady) {
         texReady = cuOgl.init(frame);
-        glBindTexture(GL_TEXTURE_2D, 0);
+        glBindTexture(GL_TEXTURE_2D, 0);  // 解绑任何可能绑定的2D纹理，用于防止意外修改纹理
     }
-    auto ok = cuOgl.copyFrom(frame, 0);
+    auto ok = cuOgl.copyFrom(frame, 0);  // 将 frame 中的数据复制到纹理
 }
 
-
+// 渲染一个用于显示全景视图的3D碗模型对象
 void SVRender::drawSurroundView(const Camera& cam, const cv::cuda::GpuMat& frame)
 {
-    glm::mat4 model = bowlmodel.transformation;
-    auto view = cam.getView();
-    auto projection = glm::perspective(glm::radians(cam.getCamZoom()), aspect_ratio, 0.1f, 100.f);
+    glm::mat4 model_transform = bowlmodel.transformation;  // 获取碗模型的变换矩阵
+    auto view = cam.getView();  // 获取摄像机视图矩阵
+    auto projection = glm::perspective(glm::radians(cam.getCamZoom()), aspect_ratio, 0.1f, 100.f);  // 创建投影矩阵，使用了摄像机的缩放值、长宽比和近远平面距离
 
 #ifdef HEMISPHERE
-    model = glm::scale(model, glm::vec3(3.f, 3.f, 3.f));
+    model_transform = glm::scale(model_transform, glm::vec3(3.f, 3.f, 3.f));  // 将模型缩放为3倍
 #else
-    model = glm::scale(model, glm::vec3(5.f, 5.f, 5.f));
+    model_transform = glm::scale(model_transform, glm::vec3(5.f, 5.f, 5.f));  // 将模型缩放为5倍
 #endif
-    OGLbowl.OGLShader.useProgramm();
-    OGLbowl.OGLShader.setMat4("model", model);
+
+    OGLbowl.OGLShader.useProgramm();  // 使用碗模型的着色器程序
+    OGLbowl.OGLShader.setMat4("model", model_transform);  // 设置着色器中的 model、view、projection 矩阵
     OGLbowl.OGLShader.setMat4("view", view);
     OGLbowl.OGLShader.setMat4("projection", projection);
     OGLbowl.OGLShader.setFloat("lum_white", white_luminance);
     OGLbowl.OGLShader.setFloat("lum_map", tonemap_luminance);
 
-    texturePrepare(frame);
+    texturePrepare(frame);  // 准备纹理
 
-    glBindVertexArray(OGLbowl.VAO);
+    glBindVertexArray(OGLbowl.VAO);  // 绑定碗模型的顶点数组对象
 
-    glDrawElements(GL_TRIANGLE_STRIP, OGLbowl.indexBuffer, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLE_STRIP, OGLbowl.indexBuffer, GL_UNSIGNED_INT, 0);  // 执行绘制调用
 
 }
 
+// 在3D场景中绘制一系列模型
 void SVRender::drawModel(const Camera& cam)
 {
-    glm::mat4 model(1.f);
-    auto view = cam.getView();
-    auto projection = glm::perspective(glm::radians(cam.getCamZoom()), aspect_ratio, 0.1f, 100.f);
+    glm::mat4 model_transform(1.f);  // 创建一个单位模型变换矩阵
+    auto view = cam.getView();  // 获取摄像机视图矩阵
+    auto projection = glm::perspective(glm::radians(cam.getCamZoom()), aspect_ratio, 0.1f, 100.f);  // 创建投影矩阵，使用了摄像机的缩放值、长宽比和近远平面距离
 
-    for(auto i = 0; i < models.size(); ++i){
-        model = modeltranformations[i];
-        modelshaders[i]->useProgramm();
-        modelshaders[i]->setMat4("model", model);
+    // 遍历所有模型并绘制
+    for(auto i = 0; i < models.size(); ++i) {
+        model_transform = modeltranformations[i];  // 获取并设置当前模型的变换矩阵
+        modelshaders[i]->useProgramm();  // 使用与当前模型关联的着色器程序
+        modelshaders[i]->setMat4("model", model_transform);  // 设置着色器中的 model、view、projection 矩阵
         modelshaders[i]->setMat4("view", view);
         modelshaders[i]->setMat4("projection", projection);
-        models[i].Draw(*modelshaders[i]);
+        models[i].Draw(*modelshaders[i]);  // 调用模型的 Draw 方法进行绘制，传递着色器作为参数
     }
-
 }
 
-
+// 在3D场景中绘制一个黑色的矩形
 void SVRender::drawBlackRect(const Camera& cam)
 {
-    glm::mat4 model(1.f);
+    glm::mat4 model_transform(1.f);  // 创建一个单位模型变换矩阵
 
 #ifdef HEMISPHERE
     const float y_min = 0.08f;
 #else
     constexpr auto bias = 1e-4;
-    const float y_min = bowlmodel.y_start + bias;
+    const float y_min = bowlmodel.y_start + bias;  // 确定矩形的垂直位置
 #endif
 
-    model = glm::translate(model, glm::vec3(0.f, y_min, 0.f));
+    model_transform = glm::translate(model_transform, glm::vec3(0.f, y_min, 0.f));  // 对模型变换矩阵应用平移变换，将矩形移动到指定的垂直位置
 
     auto view = cam.getView();
     auto projection = glm::perspective(glm::radians(cam.getCamZoom()), aspect_ratio, 0.1f, 100.f);
 
     OGLblackRect.OGLShader.useProgramm();
-    OGLblackRect.OGLShader.setMat4("model", model);
+    OGLblackRect.OGLShader.setMat4("model", model_transform);
     OGLblackRect.OGLShader.setMat4("view", view);
     OGLblackRect.OGLShader.setMat4("projection", projection);
 
-    glBindVertexArray(OGLblackRect.VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    glBindVertexArray(0);
+    glBindVertexArray(OGLblackRect.VAO);  // 绑定黑色矩形的顶点数组对象
+    glDrawArrays(GL_TRIANGLES, 0, 6);  // 使用 GL_TRIANGLES 模式绘制矩形
+    glBindVertexArray(0);  // 解绑顶点数组对象
 }
 
-
+// 在屏幕上绘制四边形 Quad，使用之前渲染到帧缓冲对象 FBO 的纹理
 void SVRender::drawScreen(const Camera& cam)
 {
-    OGLquadrender.OGLShader.useProgramm();
+    OGLquadrender.OGLShader.useProgramm();  // 使用与四边形渲染相关的着色器程序
 
-
-    glBindVertexArray(OGLquadrender.VAO);
-    glBindTexture(GL_TEXTURE_2D, OGLquadrender.framebuffer_tex);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glBindVertexArray(OGLquadrender.VAO);  // 绑定用于绘制四边形的顶点数组对象，包含了四边形顶点的位置和纹理坐标信息
+    glBindTexture(GL_TEXTURE_2D, OGLquadrender.framebuffer_tex);  // 绑定之前渲染到帧缓冲对象的纹理，这个纹理现在将用于在四边形上渲染
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);  // 使用 GL_TRIANGLE_STRIP 模式绘制四边形
 }
 
 
