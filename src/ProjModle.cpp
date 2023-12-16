@@ -1,7 +1,7 @@
 #include "ProjModel.hpp"
 
-// 生成碗状网格的顶点和索引
-bool  Bowl::generate_mesh_(const float max_size_vert, std::vector<float>& vertices, std::vector<uint>& indices)
+// 生成抛物面碗状网格的顶点和索引
+bool BowlParabModel::generate_mesh_(const float max_size_vert, std::vector<float>& vertices, std::vector<uint>& indices)
 {
     // 参数校验
     if (fabs(param_a) <= epsilon || fabs(param_b) <= epsilon || fabs(param_c) <= epsilon)
@@ -107,13 +107,14 @@ bool  Bowl::generate_mesh_(const float max_size_vert, std::vector<float>& vertic
     */
     idx_min_y -= offset_idx_min_y;
     int32 last_vert = vertices_size / _num_vertices;  // 顶点数组中最后一个顶点的索引
-    generate_indices(indices, grid_size, idx_min_y, last_vert);
+    generate_indices_(indices, grid_size, idx_min_y, last_vert);
 
     return true;
 }
 
-// 生成碗状网格的索引，索引决定了如何将顶点组合成三角形以构成网格
-void Bowl::generate_indices(std::vector<uint>& indices, const uint grid_size, const uint idx_min_y, const int32 last_vert) {
+// 生成抛物面碗状网格的索引，索引决定了如何将顶点组合成三角形以构成网格
+void BowlParabModel::generate_indices_(std::vector<uint>& indices, const uint grid_size, const uint idx_min_y, const int32 last_vert) 
+{
     bool oddRow = false;  // 判断当前行是奇数行还是偶数行
 
     for (uint y = 0; y < grid_size - 1; ++y) {  // 遍历网格的每一行，除了最后一行（因为它没有下一行来形成三角形）

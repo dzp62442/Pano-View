@@ -13,78 +13,46 @@ using uint = uint32_t;
 using int32 = int32_t;
 constexpr static float default_center[3]{0.f}; // for default value pass to constructor - argument center
 
-class Bowl
+//! ---------------------------------------------- 投影模型基类 ----------------------------------------------
+class ProjModelBase
 {
-private:  // 静态的编译时常量
+protected:  // 静态的编译时常量
     constexpr static float eps_uv = 1e-5f;  // UV 映射的精度
     constexpr static float PI = 3.14159265359f;  // 圆周率
     constexpr static auto epsilon = std::numeric_limits<float>::epsilon();  // 浮点数精度，其值为 float 类型能表示的的最小正数
     constexpr static int32 _num_vertices = 3; // x, y, z
-private:
-    float cen[3];  // 碗的中心点坐标
-    float inner_rad;  // 内半径
-    float rad;  // 外半径
-    float param_a, param_b, param_c;
-    float hole_rad;  // 碗中心的洞的半径
-    bool set_hole = false;  // 是否在碗的中心设置一个洞
+    constexpr static float polar_coord = 2 * PI;  // 极坐标的角度范围，定义碗的全角度范围
+
+protected:  // 模型基本参数
+    float cen[3];  // 模型的中心点坐标
+    bool set_hole = false;  // 是否在模型底面中心设置一个洞
     bool useUV = false;  // 是否使用 UV 映射
-    float polar_coord = 2 * PI;  // 极坐标的角度范围，定义碗的全角度范围
-public:
-    Bowl(const float inner_radius, const float radius, const float a, const float b, const float c, const float center[3] = default_center)
-            : inner_rad(inner_radius), rad(radius), param_a(a), param_b(b), param_c(c), hole_rad(0.0f)
-    {
-        cen[0] = center[0];
-        cen[1] = center[1];
-        cen[2] = center[2];
-    }
-    Bowl(const ConfigBowl& cbowl, const float center[3] = default_center) : inner_rad(cbowl.disk_radius), rad(cbowl.parab_radius),
-        param_a(cbowl.a), param_b(cbowl.b), param_c(cbowl.c), hole_rad(0.0f)
+
+public:  // 构造函数
+    ProjModelBase(const float center[3] = default_center)
     {
         cen[0] = center[0];
         cen[1] = center[1];
         cen[2] = center[2];
     }
 
+public:  // 用户调用的模型生成函数
     bool generate_mesh(const float max_size_vert, std::vector<float>& vertices, std::vector<uint>& indices)
     {
-        set_hole = false;
         useUV = false;
-        polar_coord = 2 * PI;
         return generate_mesh_(max_size_vert, vertices, indices);
     }
     bool generate_mesh_uv(const float max_size_vert, std::vector<float>& vertices, std::vector<uint>& indices)
     {
-        set_hole = false;
         useUV = true;
-        polar_coord = 2 * PI;
         return generate_mesh_(max_size_vert, vertices, indices);
     }
 
+protected:  // 具体实现模型生成的纯虚函数
+    virtual bool generate_mesh_(const float max_size_vert, std::vector<float>& vertices, std::vector<uint>& indices) = 0;
+    virtual void generate_indices_(std::vector<uint>& indices, const uint grid_size, const uint idx_min_y, const int32 last_vert) = 0;
 
-    bool generate_mesh_hole(const float max_size_vert, const float hole_radius, std::vector<float>& vertices, std::vector<uint>& indices)
-    {
-        set_hole = true;
-        useUV = false;
-        hole_rad = hole_radius;
-        polar_coord = 2 * PI;
-        return generate_mesh_(max_size_vert, vertices, indices);
-    }
-
-    bool generate_mesh_uv_hole(const float max_size_vert, const float hole_radius, std::vector<float>& vertices, std::vector<uint>& indices)
-    {
-        set_hole = true;
-        useUV = true;
-        hole_rad = hole_radius;
-        polar_coord = 2 * PI;
-        return generate_mesh_(max_size_vert, vertices, indices);
-    }
-
-protected:
-    bool generate_mesh_(const float max_size_vert, std::vector<float>& vertices, std::vector<uint>& indices);
-
-private:
-    void generate_indices(std::vector<uint>& indices, const uint grid_size, const uint idx_min_y, const int32 last_vert);
-
+protected:  // 辅助函数
     /*
         比较给定点 (x, z) 与碗中心点 cen 的距离与指定半径的关系
     */
@@ -102,10 +70,46 @@ private:
         auto gt = ((r1 + r2) > pow(radius, 2));  // 是否位于圆外
         return gt;
     }
+
 };
 
 
+//! ---------------------------------------------- 抛物面碗模型 ----------------------------------------------
+class BowlParabModel : public ProjModelBase
+{
+protected:  // 模型参数
+    float hole_rad;  // 模型底面中心的洞的半径
+    float inner_rad;  // 内半径
+    float rad;  // 外半径
+    float param_a, param_b, param_c;
 
+public:  // 构造函数
+    BowlParabModel(const ConfigProjModel& cfg_proj, const float center[3] = default_center) : inner_rad(cfg_proj.disk_radius), rad(cfg_proj.parab_radius),
+        param_a(cfg_proj.a), param_b(cfg_proj.b), param_c(cfg_proj.c), hole_rad(cfg_proj.hole_radius)
+    {
+        cen[0] = center[0];
+        cen[1] = center[1];
+        cen[2] = center[2];
+
+        // 是否在模型底面中心设置一个洞
+        if (hole_rad > 0) {
+            set_hole = true;
+        }
+        else {
+            set_hole = false;
+            hole_rad = 0;
+        }
+    }
+
+protected:  // 具体实现模型生成
+    bool generate_mesh_(const float max_size_vert, std::vector<float>& vertices, std::vector<uint>& indices) override;
+    void generate_indices_(std::vector<uint>& indices, const uint grid_size, const uint idx_min_y, const int32 last_vert) override;
+
+};
+
+
+//! TODO
+//! ---------------------------------------------- 半球面模型 ----------------------------------------------
 class HemiSphere
 {
 private:

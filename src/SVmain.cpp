@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
     display_viewer = std::make_shared<SVDisplayView>();
     renderer = std::make_shared<SVRender>(SVConfig::get().gl_width, SVConfig::get().gl_height);
     display_viewer->init(SVConfig::get().gl_width, SVConfig::get().gl_height, renderer);
-    renderer->init(SVConfig::get().cbowl, SVConfig::get().surroundshadervert, SVConfig::get().surroundshaderfrag,
+    renderer->init(SVConfig::get().cfg_proj, SVConfig::get().surroundshadervert, SVConfig::get().surroundshaderfrag,
                     SVConfig::get().screenshadervert, SVConfig::get().screenshaderfrag,
                     SVConfig::get().blackrectshadervert, SVConfig::get().blackrectshaderfrag);
     if (!renderer->addModel(SVConfig::get().car_model, SVConfig::get().car_vert_shader, SVConfig::get().car_frag_shader))

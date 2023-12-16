@@ -3,7 +3,7 @@
 #include <yaml-cpp/yaml.h>
 #include <glm/glm.hpp>
 
-struct ConfigBowl
+struct ConfigProjModel
 {
     float a, b, c;
     float disk_radius;
@@ -12,8 +12,8 @@ struct ConfigBowl
     float vertices_num;
     float y_start = 0.0;
     glm::mat4 transformation;
-    ConfigBowl() : a(0.0f), b(0.0f), c(0.0f), disk_radius(0.0f), parab_radius(0.0f), hole_radius(0.0f), vertices_num(0.0f) {}
-    ConfigBowl(const float a_, const float b_, const float c_,
+    ConfigProjModel() : a(0.0f), b(0.0f), c(0.0f), disk_radius(0.0f), parab_radius(0.0f), hole_radius(0.0f), vertices_num(0.0f) {}
+    ConfigProjModel(const float a_, const float b_, const float c_,
                const float disk_radius_, const float parab_radius_, const float hole_radius_,
                const float vertices_num_) :
                 a(a_), b(b_), c(c_), disk_radius(disk_radius_), parab_radius(parab_radius_),
@@ -52,7 +52,7 @@ public:
     std::string blackrectshadervert = "../shaders/blackrectshadervert.glsl";
     std::string blackrectshaderfrag = "../shaders/blackrectshaderfrag.glsl";
 
-    ConfigBowl cbowl;  // 碗模型参数
+    ConfigProjModel cfg_proj;  // 碗模型参数
 
 private:
     SVConfig()  // 私有构造函数，确保不能直接创建对象
@@ -67,15 +67,15 @@ private:
 
         // 加载碗模型参数
         glm::mat4 transform_bowl(1.f);
-        cbowl.transformation = transform_bowl;
-        cbowl.disk_radius = yaml["cbowl"]["disk_radius"].as<float>();
-        cbowl.parab_radius = yaml["cbowl"]["parab_radius"].as<float>(); 
-        cbowl.hole_radius = yaml["cbowl"]["hole_radius"].as<float>();
-        cbowl.a = yaml["cbowl"]["a"].as<float>();
-        cbowl.b = yaml["cbowl"]["b"].as<float>();
-        cbowl.c = yaml["cbowl"]["c"].as<float>();
-        cbowl.vertices_num = yaml["cbowl"]["vertices_num"].as<float>();
-        cbowl.y_start = yaml["cbowl"]["y_start"].as<float>();
+        cfg_proj.transformation = transform_bowl;
+        cfg_proj.disk_radius = yaml["cfg_proj"]["disk_radius"].as<float>();
+        cfg_proj.parab_radius = yaml["cfg_proj"]["parab_radius"].as<float>(); 
+        cfg_proj.hole_radius = yaml["cfg_proj"]["hole_radius"].as<float>();
+        cfg_proj.a = yaml["cfg_proj"]["a"].as<float>();
+        cfg_proj.b = yaml["cfg_proj"]["b"].as<float>();
+        cfg_proj.c = yaml["cfg_proj"]["c"].as<float>();
+        cfg_proj.vertices_num = yaml["cfg_proj"]["vertices_num"].as<float>();
+        cfg_proj.y_start = yaml["cfg_proj"]["y_start"].as<float>();
 
     }
 

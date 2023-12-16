@@ -10,7 +10,7 @@
 class SVRender
 {
 private:
-        bool initBowl(const ConfigBowl& cbowl, const std::string& filesurroundvert, const std::string& filesurroundfrag);
+        bool initBowl(const ConfigProjModel& cfg_proj, const std::string& filesurroundvert, const std::string& filesurroundfrag);
         bool initbowlBlackRect(const std::string& fileblackrectvert, const std::string& fileblackrectfrag);
         bool initQuadRender(const std::string& filescreenvert, const std::string& filescreenfrag);
 protected:
@@ -34,13 +34,13 @@ public:
         SVRender& operator=(const SVRender&) = delete;
         SVRender(const SVRender&) = delete;
 	
-        bool init(const ConfigBowl& cbowl, const std::string& shadersurroundvert, const std::string& shadersurroundfrag,
+        bool init(const ConfigProjModel& cfg_proj, const std::string& shadersurroundvert, const std::string& shadersurroundfrag,
                   const std::string& shaderscreenvert, const std::string& shaderscreenfrag,
                   const std::string shaderblackrectvert = std::string(), const std::string shaderblackrectfrag=std::string());
         void render(const Camera& cam, const cv::cuda::GpuMat& frame);
 
 private:
-        ConfigBowl config_bowl;
+        ConfigProjModel config_bowl;
         OGLBuffer OGLbowl;
         OGLBuffer OGLblackRect;
         OGLBuffer OGLquadrender;

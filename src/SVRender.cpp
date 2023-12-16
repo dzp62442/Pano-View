@@ -12,7 +12,7 @@ SVRender::SVRender(const int32 wnd_width_, const int32 wnd_height_) :
 }
 
 //! --------------------------------------  初始化  --------------------------------------
-bool SVRender::init(const ConfigBowl& cbowl, const std::string& shadersurroundvert, const std::string& shadersurroundfrag,
+bool SVRender::init(const ConfigProjModel& cfg_proj, const std::string& shadersurroundvert, const std::string& shadersurroundfrag,
                     const std::string& shaderscreenvert, const std::string& shaderscreenfrag,
                     const std::string shaderblackrectvert, const std::string shaderblackrectfrag)
 {
@@ -21,7 +21,7 @@ bool SVRender::init(const ConfigBowl& cbowl, const std::string& shadersurroundve
 
     aspect_ratio = static_cast<float>(wnd_width) / wnd_height;  // 窗口宽高比
 
-    if (!initBowl(cbowl, shadersurroundvert, shadersurroundfrag))
+    if (!initBowl(cfg_proj, shadersurroundvert, shadersurroundfrag))
         return false;
 
     if (!initbowlBlackRect(shaderblackrectvert, shaderblackrectfrag))
@@ -35,7 +35,7 @@ bool SVRender::init(const ConfigBowl& cbowl, const std::string& shadersurroundve
 }
 
 // 初始化 OGLbowl 对象
-bool SVRender::initBowl(const ConfigBowl& cbowl, const std::string& shadersurroundvert, const std::string& shadersurroundfrag)
+bool SVRender::initBowl(const ConfigProjModel& cfg_proj, const std::string& shadersurroundvert, const std::string& shadersurroundfrag)
 {
     if (!OGLbowl.OGLShader.initShader(shadersurroundvert.c_str(), shadersurroundfrag.c_str())) {  // 传入顶点和片段着色器的路径，用于初始化着色器
         LOG_ERROR("SVRender::initBowl", "OGLbowl.OGLShader.initShader() Error !");
@@ -46,12 +46,12 @@ bool SVRender::initBowl(const ConfigBowl& cbowl, const std::string& shadersurrou
     glGenBuffers(1, &OGLbowl.VBO);  // 生成顶点缓冲对象（VBO）
     glGenBuffers(1, &OGLbowl.EBO);  // 生成元素缓冲对象（EBO）
 
-    config_bowl = cbowl;  // ConfigBowl 结构体赋值
+    config_bowl = cfg_proj;  // ConfigProjModel 结构体赋值
     std::vector<float> data;
     std::vector<uint> idxs;
 
-    Bowl bowl(config_bowl);
-    if (!bowl.generate_mesh_uv_hole(cbowl.vertices_num, cbowl.hole_radius, data, idxs)) {  // 生成网格数据，存储在 data 和 idxs 向量中
+    BowlParabModel bowl_parab_model(config_bowl);
+    if (!bowl_parab_model.generate_mesh_uv(cfg_proj.vertices_num, data, idxs)) {  // 生成网格数据，存储在 data 和 idxs 向量中
         LOG_ERROR("SVRender::initBowl", "bowl.generate_mesh_uv_hole Error !");
         return false;
     }

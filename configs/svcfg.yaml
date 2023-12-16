@@ -3,7 +3,7 @@ video_stop: 100  # 视频读取结束帧
 
 video_dir: ../insta360/scene1/
 
-cbowl:  # 碗模型参数
+cfg_proj:  # 碗模型参数
   disk_radius: 0.4  # 碗顶半径？默认0.4
   parab_radius: 0.7  # 该值越大，碗底面越小？默认0.55
   hole_radius: 0.13  # 碗底洞口半径，默认0.08
