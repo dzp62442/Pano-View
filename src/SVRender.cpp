@@ -46,11 +46,11 @@ bool SVRender::initBowl(const ConfigBowl& cbowl, const std::string& shadersurrou
     glGenBuffers(1, &OGLbowl.VBO);  // 生成顶点缓冲对象（VBO）
     glGenBuffers(1, &OGLbowl.EBO);  // 生成元素缓冲对象（EBO）
 
-    bowlmodel = cbowl;  // ConfigBowl 结构体赋值
+    config_bowl = cbowl;  // ConfigBowl 结构体赋值
     std::vector<float> data;
     std::vector<uint> idxs;
 
-    Bowl bowl(bowlmodel);
+    Bowl bowl(config_bowl);
     if (!bowl.generate_mesh_uv_hole(cbowl.vertices_num, cbowl.hole_radius, data, idxs)) {  // 生成网格数据，存储在 data 和 idxs 向量中
         LOG_ERROR("SVRender::initBowl", "bowl.generate_mesh_uv_hole Error !");
         return false;
@@ -230,7 +230,7 @@ void SVRender::texturePrepare(const cv::cuda::GpuMat& frame)
 // 渲染一个用于显示全景视图的3D碗模型对象
 void SVRender::drawSurroundView(const Camera& cam, const cv::cuda::GpuMat& frame)
 {
-    glm::mat4 model_transform = bowlmodel.transformation;  // 获取碗模型的变换矩阵
+    glm::mat4 model_transform = config_bowl.transformation;  // 获取碗模型的变换矩阵
     auto view = cam.getView();  // 获取摄像机视图矩阵
     auto projection = glm::perspective(glm::radians(cam.getCamZoom()), aspect_ratio, 0.1f, 100.f);  // 创建投影矩阵，使用了摄像机的缩放值、长宽比和近远平面距离
 
@@ -282,7 +282,7 @@ void SVRender::drawBlackRect(const Camera& cam)
     const float y_min = 0.08f;
 #else
     constexpr auto bias = 1e-4;
-    const float y_min = bowlmodel.y_start + bias;  // 确定矩形的垂直位置
+    const float y_min = config_bowl.y_start + bias;  // 确定矩形的垂直位置
 #endif
 
     model_transform = glm::translate(model_transform, glm::vec3(0.f, y_min, 0.f));  // 对模型变换矩阵应用平移变换，将矩形移动到指定的垂直位置

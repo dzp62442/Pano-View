@@ -40,7 +40,7 @@ public:
         void render(const Camera& cam, const cv::cuda::GpuMat& frame);
 
 private:
-        ConfigBowl bowlmodel;
+        ConfigBowl config_bowl;
         OGLBuffer OGLbowl;
         OGLBuffer OGLblackRect;
         OGLBuffer OGLquadrender;
