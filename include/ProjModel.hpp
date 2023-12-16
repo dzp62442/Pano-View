@@ -105,30 +105,40 @@ protected:  // 具体实现模型生成
 };
 
 
-//! TODO
 //! ---------------------------------------------- 半球面模型 ----------------------------------------------
 class HemiSphereModel : public ProjModelBase
 {
 protected:  // 模型参数
-    float hole_rad;
     int x_segment, y_segment;
 
 public:  // 构造函数
     HemiSphereModel(const ConfigProjModel& proj_cfg, const float center[3] = default_center)
-            : x_segment(proj_cfg.x_segment), y_segment(proj_cfg.y_segment), hole_rad(proj_cfg.hole_radius)
+            : x_segment(proj_cfg.x_segment), y_segment(proj_cfg.y_segment)
     {
         cen[0] = center[0];
         cen[1] = center[1];
         cen[2] = center[2];
+    }
 
-        // 是否在模型底面中心设置一个洞
-        if (hole_rad > 0) {
-            set_hole = true;
-        }
-        else {
-            set_hole = false;
-            hole_rad = 0;
-        }
+protected:  // 具体实现模型生成
+    bool generate_mesh_(const float max_size_vert, std::vector<float>& vertices, std::vector<uint>& indices) override;
+    void generate_indices_(std::vector<uint>& indices, const uint grid_size, const uint idx_min_y, const int32 last_vert) override;
+};
+
+
+//! ---------------------------------------------- 球面模型 ----------------------------------------------
+class SphereModel : public ProjModelBase
+{
+protected:  // 模型参数
+    int x_segment, y_segment;
+
+public:  // 构造函数
+    SphereModel(const ConfigProjModel& proj_cfg, const float center[3] = default_center)
+            : x_segment(proj_cfg.x_segment), y_segment(proj_cfg.y_segment)
+    {
+        cen[0] = center[0];
+        cen[1] = center[1];
+        cen[2] = center[2];
     }
 
 protected:  // 具体实现模型生成

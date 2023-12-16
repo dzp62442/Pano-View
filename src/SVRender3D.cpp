@@ -49,6 +49,8 @@ bool SVRender3D::initProjModel(const std::string& shadersurroundvert, const std:
         proj_model = std::make_shared<BowlParabModel>(proj_cfg);
     else if (proj_type == "hemi_sphere")
         proj_model = std::make_shared<HemiSphereModel>(proj_cfg);
+    else if (proj_type == "sphere")
+        proj_model = std::make_shared<SphereModel>(proj_cfg);
     else {
         LOG_ERROR("SVRender3D::initProjModel", "Unknown projection type !");
         return false;
