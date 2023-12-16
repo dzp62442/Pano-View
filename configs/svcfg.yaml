@@ -3,6 +3,7 @@ video_stop: 100  # 视频读取结束帧
 
 video_dir: ../insta360/scene1/
 
+proj_type: bowl_parab  # 投影模型：bowl_parab - 抛物面球模型
 proj_cfg:  # 投影模型参数
   inner_radius: 0.4  # 碗底面半径，默认0.4
   radius: 0.7  # 碗顶面半径，默认0.55

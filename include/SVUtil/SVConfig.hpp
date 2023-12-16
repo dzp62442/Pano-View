@@ -36,7 +36,7 @@ public:
     int num_pool_threads = 8;  // threadpool线程数
     int video_start;
     int video_stop;
-    std::string win1 = "Cam0"; // window name
+    std::string proj_type;
     
     // 文件路径
     std::string video_dir;
@@ -64,6 +64,7 @@ private:
         video_stop = yaml["video_stop"].as<int>();
 
         video_dir = yaml["video_dir"].as<std::string>();
+        proj_type = yaml["proj_type"].as<std::string>();
 
         // 加载碗模型参数
         glm::mat4 transform_bowl(1.f);

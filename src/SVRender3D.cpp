@@ -6,7 +6,7 @@
 
 
 //! --------------------------------------  初始化  --------------------------------------
-bool SVRender3D::init(const ConfigProjModel& proj_cfg, const std::string& shadersurroundvert, const std::string& shadersurroundfrag,
+bool SVRender3D::init(const ConfigProjModel& proj_cfg_, const std::string& shadersurroundvert, const std::string& shadersurroundfrag,
                     const std::string& shaderscreenvert, const std::string& shaderscreenfrag,
                     const std::string shaderblackrectvert, const std::string shaderblackrectfrag)
 {
@@ -14,8 +14,9 @@ bool SVRender3D::init(const ConfigProjModel& proj_cfg, const std::string& shader
         return isInit;
 
     aspect_ratio = static_cast<float>(wnd_width) / wnd_height;  // 窗口宽高比
+    proj_cfg = proj_cfg_;  // ConfigProjModel 结构体赋值
 
-    if (!initProjModel(proj_cfg, shadersurroundvert, shadersurroundfrag))
+    if (!initProjModel(shadersurroundvert, shadersurroundfrag))
         return false;
 
     if (!initBlackRect(shaderblackrectvert, shaderblackrectfrag))
@@ -29,7 +30,7 @@ bool SVRender3D::init(const ConfigProjModel& proj_cfg, const std::string& shader
 }
 
 // 初始化 OGLProjModel 对象
-bool SVRender3D::initProjModel(const ConfigProjModel& proj_cfg, const std::string& shadersurroundvert, const std::string& shadersurroundfrag)
+bool SVRender3D::initProjModel(const std::string& shadersurroundvert, const std::string& shadersurroundfrag)
 {
     if (!OGLProjModel.OGLShader.initShader(shadersurroundvert.c_str(), shadersurroundfrag.c_str())) {  // 传入顶点和片段着色器的路径，用于初始化着色器
         LOG_ERROR("SVRender3D::initProjModel", "OGLProjModel.OGLShader.initShader() Error !");
@@ -40,12 +41,19 @@ bool SVRender3D::initProjModel(const ConfigProjModel& proj_cfg, const std::strin
     glGenBuffers(1, &OGLProjModel.VBO);  // 生成顶点缓冲对象（VBO）
     glGenBuffers(1, &OGLProjModel.EBO);  // 生成元素缓冲对象（EBO）
 
-    proj_cfg_ = proj_cfg;  // ConfigProjModel 结构体赋值
     std::vector<float> data;
     std::vector<uint> idxs;
 
-    proj_model = std::make_shared<BowlParabModel>(proj_cfg_);
-    if (!proj_model->generate_mesh_uv(proj_cfg_.vertices_num, data, idxs)) {  // 生成网格数据，存储在 data 和 idxs 向量中
+    // 初始化投影模型
+    if (proj_type == "bowl_parab")
+        proj_model = std::make_shared<BowlParabModel>(proj_cfg);
+    else {
+        LOG_ERROR("SVRender3D::initProjModel", "Unknown projection type !");
+        return false;
+    }
+
+    // 生成模型网格数据，存储在 data 和 idxs 向量中
+    if (!proj_model->generate_mesh_uv(proj_cfg.vertices_num, data, idxs)) {  
         LOG_ERROR("SVRender3D::initProjModel", "bowl.generate_mesh_uv_hole Error !");
         return false;
     }
@@ -224,7 +232,7 @@ void SVRender3D::texturePrepare(const cv::cuda::GpuMat& frame)
 // 渲染一个用于显示全景视图的3D投影模型对象
 void SVRender3D::drawSurroundView(const Camera& cam, const cv::cuda::GpuMat& frame)
 {
-    glm::mat4 proj_model_transform = proj_cfg_.transformation;  // 获取碗模型的变换矩阵
+    glm::mat4 proj_model_transform = proj_cfg.transformation;  // 获取碗模型的变换矩阵
     auto view = cam.getView();  // 获取摄像机视图矩阵
     auto projection = glm::perspective(glm::radians(cam.getCamZoom()), aspect_ratio, 0.1f, 100.f);  // 创建投影矩阵，使用了摄像机的缩放值、长宽比和近远平面距离
 
@@ -276,7 +284,7 @@ void SVRender3D::drawBlackRect(const Camera& cam)
     const float y_min = 0.08f;
 #else
     constexpr auto bias = 1e-4;
-    const float y_min = proj_cfg_.y_start + bias;  // 确定矩形的垂直位置
+    const float y_min = proj_cfg.y_start + bias;  // 确定矩形的垂直位置
 #endif
 
     model_transform = glm::translate(model_transform, glm::vec3(0.f, y_min, 0.f));  // 对模型变换矩阵应用平移变换，将矩形移动到指定的垂直位置
