@@ -98,7 +98,7 @@ static void processInput(GLFWwindow* window, SVDisplayView* svdisp)
 }
 
 
-bool SVDisplayView::init(const int32 wnd_width, const int32 wnd_height, std::shared_ptr<SVRender> renderer_)
+bool SVDisplayView::init(const int32 wnd_width, const int32 wnd_height, std::shared_ptr<SVRender3D> renderer_)
 {
     if (isInit)
         return isInit;

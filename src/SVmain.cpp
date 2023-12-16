@@ -15,12 +15,12 @@ int main(int argc, char* argv[])
 {           
     SVLogger::getInstance().setLogLevel(LogLevel::DEBUG);
     ThreadPool threadpool(SVConfig::get().num_pool_threads);
-    std::shared_ptr<SVRender> renderer;
+    std::shared_ptr<SVRender3D> renderer;
     std::shared_ptr<SVDisplayView> display_viewer;  
 
     // 系统初始化
     display_viewer = std::make_shared<SVDisplayView>();
-    renderer = std::make_shared<SVRender>(SVConfig::get().gl_width, SVConfig::get().gl_height);
+    renderer = std::make_shared<SVRender3D>(SVConfig::get().gl_width, SVConfig::get().gl_height);
     display_viewer->init(SVConfig::get().gl_width, SVConfig::get().gl_height, renderer);
     renderer->init(SVConfig::get().cfg_proj, SVConfig::get().surroundshadervert, SVConfig::get().surroundshaderfrag,
                     SVConfig::get().screenshadervert, SVConfig::get().screenshaderfrag,

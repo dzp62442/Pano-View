@@ -2,7 +2,7 @@
 #include <memory>
 #include <stdint.h>
 
-#include <SVRender.hpp>
+#include <SVRender3D.hpp>
 
 #define GLFW_INCLUDE_ES32
 #include "GLFW/glfw3.h"
@@ -21,7 +21,7 @@ private:
 	GLFWwindow* window;
     int32 width = 0, height = 0;
     float aspect_ratio;
-    std::shared_ptr<SVRender> renderer;
+    std::shared_ptr<SVRender3D> renderer;
     bool isInit = false;
     bool useDemoSurroundView = false, useDemoTopView = false;
 
@@ -35,7 +35,7 @@ public:
     ~SVDisplayView() { glfwTerminate(); }
 
 public:
-    bool init(const int32 wnd_width, const int32 wnd_height, std::shared_ptr<SVRender> renderer_);
+    bool init(const int32 wnd_width, const int32 wnd_height, std::shared_ptr<SVRender3D> renderer_);
 
     bool render(const cv::cuda::GpuMat& frame);
 

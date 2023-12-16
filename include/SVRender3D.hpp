@@ -7,7 +7,7 @@
 #include <SVCudaOGL.hpp>
 
 
-class SVRender
+class SVRender3D
 {
 private:
         bool initBowl(const ConfigProjModel& cfg_proj, const std::string& filesurroundvert, const std::string& filesurroundfrag);
@@ -29,10 +29,10 @@ public:
        void setToneLuminance(const float tone_luminance_) {tonemap_luminance = tone_luminance_;}
 
 public:
-        SVRender(const int32 wnd_width_, const int32 wnd_height_);
+        SVRender3D(const int32 wnd_width_, const int32 wnd_height_);
 
-        SVRender& operator=(const SVRender&) = delete;
-        SVRender(const SVRender&) = delete;
+        SVRender3D& operator=(const SVRender3D&) = delete;
+        SVRender3D(const SVRender3D&) = delete;
 	
         bool init(const ConfigProjModel& cfg_proj, const std::string& shadersurroundvert, const std::string& shadersurroundfrag,
                   const std::string& shaderscreenvert, const std::string& shaderscreenfrag,

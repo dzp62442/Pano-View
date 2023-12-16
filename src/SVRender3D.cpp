@@ -1,10 +1,10 @@
-#include <SVRender.hpp>
+#include <SVRender3D.hpp>
 
 #include <opencv2/cudawarping.hpp>
 #include <opencv2/cudaimgproc.hpp>
 #include <opencv2/cudaarithm.hpp>
 
-SVRender::SVRender(const int32 wnd_width_, const int32 wnd_height_) :
+SVRender3D::SVRender3D(const int32 wnd_width_, const int32 wnd_height_) :
     wnd_width(wnd_width_), wnd_height(wnd_height_), aspect_ratio(0.f), texReady(false),
     white_luminance(1.0), tonemap_luminance(1.0)
 {
@@ -12,7 +12,7 @@ SVRender::SVRender(const int32 wnd_width_, const int32 wnd_height_) :
 }
 
 //! --------------------------------------  初始化  --------------------------------------
-bool SVRender::init(const ConfigProjModel& cfg_proj, const std::string& shadersurroundvert, const std::string& shadersurroundfrag,
+bool SVRender3D::init(const ConfigProjModel& cfg_proj, const std::string& shadersurroundvert, const std::string& shadersurroundfrag,
                     const std::string& shaderscreenvert, const std::string& shaderscreenfrag,
                     const std::string shaderblackrectvert, const std::string shaderblackrectfrag)
 {
@@ -35,10 +35,10 @@ bool SVRender::init(const ConfigProjModel& cfg_proj, const std::string& shadersu
 }
 
 // 初始化 OGLbowl 对象
-bool SVRender::initBowl(const ConfigProjModel& cfg_proj, const std::string& shadersurroundvert, const std::string& shadersurroundfrag)
+bool SVRender3D::initBowl(const ConfigProjModel& cfg_proj, const std::string& shadersurroundvert, const std::string& shadersurroundfrag)
 {
     if (!OGLbowl.OGLShader.initShader(shadersurroundvert.c_str(), shadersurroundfrag.c_str())) {  // 传入顶点和片段着色器的路径，用于初始化着色器
-        LOG_ERROR("SVRender::initBowl", "OGLbowl.OGLShader.initShader() Error !");
+        LOG_ERROR("SVRender3D::initBowl", "OGLbowl.OGLShader.initShader() Error !");
         return false;
     }
         
@@ -52,7 +52,7 @@ bool SVRender::initBowl(const ConfigProjModel& cfg_proj, const std::string& shad
 
     BowlParabModel bowl_parab_model(config_bowl);
     if (!bowl_parab_model.generate_mesh_uv(cfg_proj.vertices_num, data, idxs)) {  // 生成网格数据，存储在 data 和 idxs 向量中
-        LOG_ERROR("SVRender::initBowl", "bowl.generate_mesh_uv_hole Error !");
+        LOG_ERROR("SVRender3D::initBowl", "bowl.generate_mesh_uv_hole Error !");
         return false;
     }
 
@@ -74,10 +74,10 @@ bool SVRender::initBowl(const ConfigProjModel& cfg_proj, const std::string& shad
 }
 
 // 初始化 OGLblackRect 对象，用于渲染黑色矩形
-bool SVRender::initbowlBlackRect(const std::string& fileblackrectvert, const std::string& fileblackrectfrag)
+bool SVRender3D::initbowlBlackRect(const std::string& fileblackrectvert, const std::string& fileblackrectfrag)
 {
     if (!OGLblackRect.OGLShader.initShader(fileblackrectvert.c_str(), fileblackrectfrag.c_str())) {  // 传入顶点和片段着色器的路径，用于初始化着色器
-        LOG_ERROR("SVRender::initbowlBlackRect", "OGLblackRect.OGLShader.initShader Error !");
+        LOG_ERROR("SVRender3D::initbowlBlackRect", "OGLblackRect.OGLShader.initShader Error !");
         return false;
     }
 
@@ -106,10 +106,10 @@ bool SVRender::initbowlBlackRect(const std::string& fileblackrectvert, const std
 }
 
 // 初始化 OGLquadrender 对象，用于渲染二维四边形（quad）
-bool SVRender::initQuadRender(const std::string& shaderscreenvert, const std::string& shaderscreenfrag)
+bool SVRender3D::initQuadRender(const std::string& shaderscreenvert, const std::string& shaderscreenfrag)
 {
     if (!OGLquadrender.OGLShader.initShader(shaderscreenvert.c_str(), shaderscreenfrag.c_str())) {  // 传入顶点和片段着色器的路径，用于初始化着色器
-        LOG_ERROR("SVRender::initQuadRender", "OGLquadrender.OGLShader.initShader Error !");
+        LOG_ERROR("SVRender3D::initQuadRender", "OGLquadrender.OGLShader.initShader Error !");
         return false;
     }
 
@@ -155,17 +155,17 @@ bool SVRender::initQuadRender(const std::string& shaderscreenvert, const std::st
 }
 
 // 加载车辆3D模型，初始化相应的着色器，并设置模型的变换
-bool SVRender::addModel(const std::string& pathmodel, const std::string& pathvertshader, const std::string& pathfragshader)
+bool SVRender3D::addModel(const std::string& pathmodel, const std::string& pathvertshader, const std::string& pathfragshader)
 {
     if (pathmodel.empty() || pathvertshader.empty() || pathfragshader.empty()) {
-        LOG_ERROR("SVRender::addModel", "Empty path to model");
+        LOG_ERROR("SVRender3D::addModel", "Empty path to model");
         return false;
     }
 
     // 加载车辆3D模型文件
     Model m(pathmodel);
     if (!m.getModelInit()) {
-        LOG_ERROR("SVRender::addModel", "Fail load model from path");
+        LOG_ERROR("SVRender3D::addModel", "Fail load model from path");
         return false;
     }
 
@@ -173,7 +173,7 @@ bool SVRender::addModel(const std::string& pathmodel, const std::string& pathver
     modelshaders.emplace_back(std::make_shared<Shader>());
     auto last_idx = modelshaders.size() - 1;
     if (!modelshaders[last_idx]->initShader(pathvertshader.c_str(), pathfragshader.c_str())) {
-        LOG_ERROR("SVRender::addModel", "Fail init shaders for load model");
+        LOG_ERROR("SVRender3D::addModel", "Fail init shaders for load model");
         return false;
     }
 
@@ -194,7 +194,7 @@ bool SVRender::addModel(const std::string& pathmodel, const std::string& pathver
 }
 
 //! --------------------------------------  渲染  --------------------------------------
-void SVRender::render(const Camera& cam, const cv::cuda::GpuMat& frame)
+void SVRender3D::render(const Camera& cam, const cv::cuda::GpuMat& frame)
 {
     glEnable(GL_DEPTH_TEST);  // 绘制之前启用深度测试，以正确处理遮挡关系
     glBindFramebuffer(GL_FRAMEBUFFER, OGLquadrender.framebuffer); // 绑定帧缓冲对象，所有渲染命令将渲染到这个帧缓冲而不是默认的帧缓冲（即屏幕）
@@ -218,7 +218,7 @@ void SVRender::render(const Camera& cam, const cv::cuda::GpuMat& frame)
 }
 
 // 使用 cv::cuda::GpuMat 对象准备纹理
-void SVRender::texturePrepare(const cv::cuda::GpuMat& frame)
+void SVRender3D::texturePrepare(const cv::cuda::GpuMat& frame)
 {
     if (!texReady) {
         texReady = cuOgl.init(frame);
@@ -228,7 +228,7 @@ void SVRender::texturePrepare(const cv::cuda::GpuMat& frame)
 }
 
 // 渲染一个用于显示全景视图的3D碗模型对象
-void SVRender::drawSurroundView(const Camera& cam, const cv::cuda::GpuMat& frame)
+void SVRender3D::drawSurroundView(const Camera& cam, const cv::cuda::GpuMat& frame)
 {
     glm::mat4 model_transform = config_bowl.transformation;  // 获取碗模型的变换矩阵
     auto view = cam.getView();  // 获取摄像机视图矩阵
@@ -256,7 +256,7 @@ void SVRender::drawSurroundView(const Camera& cam, const cv::cuda::GpuMat& frame
 }
 
 // 在3D场景中绘制一系列模型
-void SVRender::drawModel(const Camera& cam)
+void SVRender3D::drawModel(const Camera& cam)
 {
     glm::mat4 model_transform(1.f);  // 创建一个单位模型变换矩阵
     auto view = cam.getView();  // 获取摄像机视图矩阵
@@ -274,7 +274,7 @@ void SVRender::drawModel(const Camera& cam)
 }
 
 // 在3D场景中绘制一个黑色的矩形
-void SVRender::drawBlackRect(const Camera& cam)
+void SVRender3D::drawBlackRect(const Camera& cam)
 {
     glm::mat4 model_transform(1.f);  // 创建一个单位模型变换矩阵
 
@@ -301,7 +301,7 @@ void SVRender::drawBlackRect(const Camera& cam)
 }
 
 // 在屏幕上绘制四边形 Quad，使用之前渲染到帧缓冲对象 FBO 的纹理
-void SVRender::drawScreen(const Camera& cam)
+void SVRender3D::drawScreen(const Camera& cam)
 {
     OGLquadrender.OGLShader.useProgramm();  // 使用与四边形渲染相关的着色器程序
 
