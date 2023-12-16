@@ -11,14 +11,10 @@ struct ConfigProjModel
     float hole_radius;
     float vertices_num;
     float y_start = 0.0;
+    float x_segment, y_segment;
     glm::mat4 transformation;
-    ConfigProjModel() : a(0.0f), b(0.0f), c(0.0f), inner_radius(0.0f), radius(0.0f), hole_radius(0.0f), vertices_num(0.0f) {}
-    ConfigProjModel(const float a_, const float b_, const float c_,
-               const float inner_radius_, const float radius_, const float hole_radius_,
-               const float vertices_num_) :
-                a(a_), b(b_), c(c_), inner_radius(inner_radius_), radius(radius_),
-                hole_radius(hole_radius_), vertices_num(vertices_num_)
-    {}
+    ConfigProjModel() : a(0.0f), b(0.0f), c(0.0f), inner_radius(0.0f), radius(0.0f), hole_radius(0.0f), vertices_num(0.0f), x_segment(0.0f), y_segment(0.0f) {}
+
 };
 
 // 使用单例模式构建全局参数类
@@ -77,7 +73,8 @@ private:
         proj_cfg.c = yaml["proj_cfg"]["c"].as<float>();
         proj_cfg.vertices_num = yaml["proj_cfg"]["vertices_num"].as<float>();
         proj_cfg.y_start = yaml["proj_cfg"]["y_start"].as<float>();
-
+        proj_cfg.x_segment = yaml["proj_cfg"]["x_segment"].as<float>();
+        proj_cfg.y_segment = yaml["proj_cfg"]["y_segment"].as<float>();
     }
 
     ~SVConfig() = default;

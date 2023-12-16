@@ -22,6 +22,7 @@ protected:  // 静态的编译时常量
     constexpr static auto epsilon = std::numeric_limits<float>::epsilon();  // 浮点数精度，其值为 float 类型能表示的的最小正数
     constexpr static int32 _num_vertices = 3; // x, y, z
     constexpr static float polar_coord = 2 * PI;  // 极坐标的角度范围，定义碗的全角度范围
+    constexpr static float half_pi = 3.14159265359f / 2.0f;  // 半圆周率
 
 protected:  // 模型基本参数
     float cen[3];  // 模型的中心点坐标
@@ -106,35 +107,31 @@ protected:  // 具体实现模型生成
 
 //! TODO
 //! ---------------------------------------------- 半球面模型 ----------------------------------------------
-class HemiSphere
+class HemiSphereModel : public ProjModelBase
 {
-private:
-    constexpr static float eps_uv = 1e-4f;
-    constexpr static float PI = 3.14159265359f;
-    constexpr static auto epsilon = std::numeric_limits<float>::epsilon();
-    constexpr static int32 _num_vertices = 3; // x, y, z
-private:
-    float cen[3];
+protected:  // 模型参数
     float hole_rad;
-    bool set_hole = false;
-    float polar_coord = 2 * PI;
-    float half_pi = PI / 2.0f;
     int x_segment, y_segment;
-public:
-    HemiSphere(const int x_segm, const int y_segm, const float center[3] = default_center)
-            : x_segment(x_segm), y_segment(y_segm), hole_rad(0.0f)
+
+public:  // 构造函数
+    HemiSphereModel(const ConfigProjModel& proj_cfg, const float center[3] = default_center)
+            : x_segment(proj_cfg.x_segment), y_segment(proj_cfg.y_segment), hole_rad(proj_cfg.hole_radius)
     {
         cen[0] = center[0];
         cen[1] = center[1];
         cen[2] = center[2];
-    }
-    bool generate_mesh_uv(std::vector<float>& vertices, std::vector<uint>& indices)
-    {
-        polar_coord = 2 * PI;
-        return generate_mesh_(vertices, indices);
+
+        // 是否在模型底面中心设置一个洞
+        if (hole_rad > 0) {
+            set_hole = true;
+        }
+        else {
+            set_hole = false;
+            hole_rad = 0;
+        }
     }
 
-protected:
-    bool generate_mesh_(std::vector<float>& vertices, std::vector<uint>& indices);
-
+protected:  // 具体实现模型生成
+    bool generate_mesh_(const float max_size_vert, std::vector<float>& vertices, std::vector<uint>& indices) override;
+    void generate_indices_(std::vector<uint>& indices, const uint grid_size, const uint idx_min_y, const int32 last_vert) override;
 };

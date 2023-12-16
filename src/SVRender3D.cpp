@@ -47,6 +47,8 @@ bool SVRender3D::initProjModel(const std::string& shadersurroundvert, const std:
     // 初始化投影模型
     if (proj_type == "bowl_parab")
         proj_model = std::make_shared<BowlParabModel>(proj_cfg);
+    else if (proj_type == "hemi_sphere")
+        proj_model = std::make_shared<HemiSphereModel>(proj_cfg);
     else {
         LOG_ERROR("SVRender3D::initProjModel", "Unknown projection type !");
         return false;
@@ -205,9 +207,9 @@ void SVRender3D::render(const Camera& cam, const cv::cuda::GpuMat& frame)
 
     drawSurroundView(cam, frame);
 
-    drawBlackRect(cam);
+    // drawBlackRect(cam);
 
-    drawObjModel(cam);
+    // drawObjModel(cam);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0); // 绑定回默认的帧缓冲对象，准备将内容渲染到屏幕上
     glDisable(GL_DEPTH_TEST);  // 禁用深度测试，这通常在渲染2D内容或后期处理时进行
