@@ -1,9 +1,9 @@
 #pragma once
 #include <vector>
 
-#include <Bowl.hpp>
+#include <ProjModel.hpp>
 #include <Virtcam.hpp>
-#include <Model.hpp>
+#include <ObjModel.hpp>
 #include <SVCudaOGL.hpp>
 
 

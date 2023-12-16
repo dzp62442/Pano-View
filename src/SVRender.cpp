@@ -203,9 +203,9 @@ void SVRender::render(const Camera& cam, const cv::cuda::GpuMat& frame)
 
     drawSurroundView(cam, frame);
 
-    drawBlackRect(cam);
+    // drawBlackRect(cam);
 
-    drawModel(cam);
+    // drawModel(cam);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0); // 绑定回默认的帧缓冲对象，准备将内容渲染到屏幕上
     glDisable(GL_DEPTH_TEST);  // 禁用深度测试，这通常在渲染2D内容或后期处理时进行

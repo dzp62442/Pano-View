@@ -1,4 +1,4 @@
-#include "Bowl.hpp"
+#include "ProjModel.hpp"
 
 // 生成碗状网格的顶点和索引
 bool  Bowl::generate_mesh_(const float max_size_vert, std::vector<float>& vertices, std::vector<uint>& indices)

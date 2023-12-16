@@ -1,4 +1,4 @@
-#include <Model.hpp>
+#include <ObjModel.hpp>
 
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
