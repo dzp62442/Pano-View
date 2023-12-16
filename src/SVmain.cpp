@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
     renderer->init(SVConfig::get().proj_cfg, SVConfig::get().surroundshadervert, SVConfig::get().surroundshaderfrag,
                     SVConfig::get().screenshadervert, SVConfig::get().screenshaderfrag,
                     SVConfig::get().blackrectshadervert, SVConfig::get().blackrectshaderfrag);
-    if (!renderer->addModel(SVConfig::get().car_model, SVConfig::get().car_vert_shader, SVConfig::get().car_frag_shader))
+    if (!renderer->addObjModel(SVConfig::get().car_model, SVConfig::get().car_vert_shader, SVConfig::get().car_frag_shader))
         LOG_ERROR("SVApp::showPanorama", "Error can't add model");
 
     cv::Mat panorama;

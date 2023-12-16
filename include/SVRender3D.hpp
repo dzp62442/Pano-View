@@ -10,18 +10,18 @@
 class SVRender3D
 {
 private:
-    bool initBowl(const ConfigProjModel& proj_cfg, const std::string& filesurroundvert, const std::string& filesurroundfrag);
-    bool initbowlBlackRect(const std::string& fileblackrectvert, const std::string& fileblackrectfrag);
+    bool initProjModel(const ConfigProjModel& proj_cfg, const std::string& filesurroundvert, const std::string& filesurroundfrag);
+    bool initBlackRect(const std::string& fileblackrectvert, const std::string& fileblackrectfrag);
     bool initQuadRender(const std::string& filescreenvert, const std::string& filescreenfrag);
 protected:
     void texturePrepare(const cv::cuda::GpuMat& frame);
     void drawSurroundView(const Camera& cam, const cv::cuda::GpuMat& frame);
-    void drawModel(const Camera& cam);
+    void drawObjModel(const Camera& cam);
     void drawScreen(const Camera& cam);
     void drawBlackRect(const Camera& cam);
 public:  
     bool getInit() const{return isInit;}
-    bool addModel(const std::string& pathmodel, const std::string& pathvertshader,
+    bool addObjModel(const std::string& pathmodel, const std::string& pathvertshader,
                   const std::string& pathfragshader);
     float getWhiteLuminance() const{return white_luminance;}
     void setWhiteLuminance(const float white_luminance_) {white_luminance = white_luminance_;}
@@ -44,18 +44,18 @@ public:
 private:
         ConfigProjModel proj_cfg_;
         std::shared_ptr<ProjModelBase> proj_model;
-        OGLBuffer OGLbowl;
-        OGLBuffer OGLblackRect;
-        OGLBuffer OGLquadrender;
+        OGLBuffer OGLProjModel;
+        OGLBuffer OGLBlackRect;
+        OGLBuffer OGLQuadRender;
         float aspect_ratio;  // 窗口宽高比
         int32  wnd_width;
         int32  wnd_height;
         CUDA_OGL cuOgl;
         float white_luminance, tonemap_luminance;
 private:
-        std::vector<Model> models;
-        std::vector<std::shared_ptr<Shader>> modelshaders;
-        std::vector<glm::mat4> modeltranformations;
+        std::vector<ObjModel> obj_models;
+        std::vector<std::shared_ptr<Shader>> obj_model_shaders;
+        std::vector<glm::mat4> obj_model_transformations;
         bool isInit = false;
         bool texReady;
 };

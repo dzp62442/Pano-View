@@ -6,17 +6,17 @@
 struct ConfigProjModel
 {
     float a, b, c;
-    float disk_radius;
-    float parab_radius;
+    float inner_radius;
+    float radius;
     float hole_radius;
     float vertices_num;
     float y_start = 0.0;
     glm::mat4 transformation;
-    ConfigProjModel() : a(0.0f), b(0.0f), c(0.0f), disk_radius(0.0f), parab_radius(0.0f), hole_radius(0.0f), vertices_num(0.0f) {}
+    ConfigProjModel() : a(0.0f), b(0.0f), c(0.0f), inner_radius(0.0f), radius(0.0f), hole_radius(0.0f), vertices_num(0.0f) {}
     ConfigProjModel(const float a_, const float b_, const float c_,
-               const float disk_radius_, const float parab_radius_, const float hole_radius_,
+               const float inner_radius_, const float radius_, const float hole_radius_,
                const float vertices_num_) :
-                a(a_), b(b_), c(c_), disk_radius(disk_radius_), parab_radius(parab_radius_),
+                a(a_), b(b_), c(c_), inner_radius(inner_radius_), radius(radius_),
                 hole_radius(hole_radius_), vertices_num(vertices_num_)
     {}
 };
@@ -68,8 +68,8 @@ private:
         // 加载碗模型参数
         glm::mat4 transform_bowl(1.f);
         proj_cfg.transformation = transform_bowl;
-        proj_cfg.disk_radius = yaml["proj_cfg"]["disk_radius"].as<float>();
-        proj_cfg.parab_radius = yaml["proj_cfg"]["parab_radius"].as<float>(); 
+        proj_cfg.inner_radius = yaml["proj_cfg"]["inner_radius"].as<float>();
+        proj_cfg.radius = yaml["proj_cfg"]["radius"].as<float>(); 
         proj_cfg.hole_radius = yaml["proj_cfg"]["hole_radius"].as<float>();
         proj_cfg.a = yaml["proj_cfg"]["a"].as<float>();
         proj_cfg.b = yaml["proj_cfg"]["b"].as<float>();

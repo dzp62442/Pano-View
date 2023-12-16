@@ -13,7 +13,7 @@
 
 uint TextureFromFile(const char* path, const std::string& directory);
 
-void Model::InitModel(const std::string& pathmodel)
+void ObjModel::InitModel(const std::string& pathmodel)
 {
     if (isInit)
         return;
@@ -24,7 +24,7 @@ void Model::InitModel(const std::string& pathmodel)
 }
 
 
-void Model::loadModel(const std::string& path)
+void ObjModel::loadModel(const std::string& path)
 {
     Assimp::Importer import_;
     const aiScene* scene = import_.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs);
@@ -47,7 +47,7 @@ void Model::loadModel(const std::string& path)
 
 
 
-void Model::processNode(aiNode* node, const aiScene* scene)
+void ObjModel::processNode(aiNode* node, const aiScene* scene)
 {
     // process all the node’s meshes (if exists)
     for (size_t i = 0; i < node->mNumMeshes; ++i) {
@@ -63,7 +63,7 @@ void Model::processNode(aiNode* node, const aiScene* scene)
 }
 
 
-Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
+Mesh ObjModel::processMesh(aiMesh* mesh, const aiScene* scene)
 {
     std::vector<Vertex> vertices;
     std::vector<uint> indices;
@@ -111,7 +111,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 }
 
 
-MaterialInfo Model::processMaterial(aiMaterial* material)
+MaterialInfo ObjModel::processMaterial(aiMaterial* material)
 {
     MaterialInfo mater;
     aiString mname;
@@ -152,7 +152,7 @@ MaterialInfo Model::processMaterial(aiMaterial* material)
 }
 
 
-std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type, const TexType typeName)
+std::vector<Texture> ObjModel::loadMaterialTextures(aiMaterial* mat, aiTextureType type, const TexType typeName)
 {
     std::vector<Texture> texs;
 
@@ -180,13 +180,13 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType 
 }
 
 
-void Model::clearResource(){
+void ObjModel::clearResource(){
     for(auto& mesh : meshes)
         mesh.clearBuffers();
 }
 
 
-void Model::Draw(Shader& shader)
+void ObjModel::Draw(Shader& shader)
 {
     if (!isInit)
       return;

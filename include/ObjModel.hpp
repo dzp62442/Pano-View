@@ -8,11 +8,11 @@ using uchar = unsigned char;
 
 
 
-class Model
+class ObjModel
 {
 public:
-    Model() : isInit(false) {}
-    Model(const std::string& pathmodel) : isInit(false) {InitModel(pathmodel);}
+    ObjModel() : isInit(false) {}
+    ObjModel(const std::string& pathmodel) : isInit(false) {InitModel(pathmodel);}
 
     void InitModel(const std::string& pathmodel);
     void Draw(Shader& shader);
