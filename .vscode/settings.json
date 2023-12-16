@@ -69,5 +69,6 @@
         "valarray": "cpp",
         "variant": "cpp",
         "__nullptr": "cpp"
-    }
+    },
+    "cmake.configureOnOpen": false
 }

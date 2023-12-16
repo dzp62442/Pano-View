@@ -6,6 +6,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <ThreadPool.hpp>
+#include <ProjModel.hpp>
 #include <SVDisplay.hpp>
 #include <SVUtil/SVUtil.hpp>
 
@@ -15,14 +16,14 @@ int main(int argc, char* argv[])
 {           
     SVLogger::getInstance().setLogLevel(LogLevel::DEBUG);
     ThreadPool threadpool(SVConfig::get().num_pool_threads);
+    std::shared_ptr<SVDisplayView> display_viewer;
     std::shared_ptr<SVRender3D> renderer;
-    std::shared_ptr<SVDisplayView> display_viewer;  
-
+    
     // 系统初始化
     display_viewer = std::make_shared<SVDisplayView>();
     renderer = std::make_shared<SVRender3D>(SVConfig::get().gl_width, SVConfig::get().gl_height);
     display_viewer->init(SVConfig::get().gl_width, SVConfig::get().gl_height, renderer);
-    renderer->init(SVConfig::get().cfg_proj, SVConfig::get().surroundshadervert, SVConfig::get().surroundshaderfrag,
+    renderer->init(SVConfig::get().proj_cfg, SVConfig::get().surroundshadervert, SVConfig::get().surroundshaderfrag,
                     SVConfig::get().screenshadervert, SVConfig::get().screenshaderfrag,
                     SVConfig::get().blackrectshadervert, SVConfig::get().blackrectshaderfrag);
     if (!renderer->addModel(SVConfig::get().car_model, SVConfig::get().car_vert_shader, SVConfig::get().car_frag_shader))
@@ -34,7 +35,8 @@ int main(int argc, char* argv[])
     panorama = cv::imread(panorama_path + std::to_string(imgNum) + ".jpg");
     cv::Size panoramaSize = cv::Size(panorama.cols, panorama.rows);  // 全景图尺寸需保持一致
 
-    while(!finish)  // 开始浏览
+    // 开始浏览
+    while(!finish)  
     {
         SVTimer show_timer;
 

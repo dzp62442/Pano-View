@@ -29,12 +29,7 @@ protected:  // 模型基本参数
     bool useUV = false;  // 是否使用 UV 映射
 
 public:  // 构造函数
-    ProjModelBase(const float center[3] = default_center)
-    {
-        cen[0] = center[0];
-        cen[1] = center[1];
-        cen[2] = center[2];
-    }
+    ProjModelBase() {}
 
 public:  // 用户调用的模型生成函数
     bool generate_mesh(const float max_size_vert, std::vector<float>& vertices, std::vector<uint>& indices)
@@ -84,8 +79,9 @@ protected:  // 模型参数
     float param_a, param_b, param_c;
 
 public:  // 构造函数
-    BowlParabModel(const ConfigProjModel& cfg_proj, const float center[3] = default_center) : inner_rad(cfg_proj.disk_radius), rad(cfg_proj.parab_radius),
-        param_a(cfg_proj.a), param_b(cfg_proj.b), param_c(cfg_proj.c), hole_rad(cfg_proj.hole_radius)
+    BowlParabModel() {}
+    BowlParabModel(const ConfigProjModel& proj_cfg, const float center[3] = default_center) : inner_rad(proj_cfg.disk_radius), rad(proj_cfg.parab_radius),
+        param_a(proj_cfg.a), param_b(proj_cfg.b), param_c(proj_cfg.c), hole_rad(proj_cfg.hole_radius)
     {
         cen[0] = center[0];
         cen[1] = center[1];

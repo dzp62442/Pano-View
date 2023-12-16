@@ -10,37 +10,40 @@
 class SVRender3D
 {
 private:
-        bool initBowl(const ConfigProjModel& cfg_proj, const std::string& filesurroundvert, const std::string& filesurroundfrag);
-        bool initbowlBlackRect(const std::string& fileblackrectvert, const std::string& fileblackrectfrag);
-        bool initQuadRender(const std::string& filescreenvert, const std::string& filescreenfrag);
+    bool initBowl(const ConfigProjModel& proj_cfg, const std::string& filesurroundvert, const std::string& filesurroundfrag);
+    bool initbowlBlackRect(const std::string& fileblackrectvert, const std::string& fileblackrectfrag);
+    bool initQuadRender(const std::string& filescreenvert, const std::string& filescreenfrag);
 protected:
-        void texturePrepare(const cv::cuda::GpuMat& frame);
-        void drawSurroundView(const Camera& cam, const cv::cuda::GpuMat& frame);
-        void drawModel(const Camera& cam);
-        void drawScreen(const Camera& cam);
-        void drawBlackRect(const Camera& cam);
+    void texturePrepare(const cv::cuda::GpuMat& frame);
+    void drawSurroundView(const Camera& cam, const cv::cuda::GpuMat& frame);
+    void drawModel(const Camera& cam);
+    void drawScreen(const Camera& cam);
+    void drawBlackRect(const Camera& cam);
 public:  
-       bool getInit() const{return isInit;}
-       bool addModel(const std::string& pathmodel, const std::string& pathvertshader,
-                     const std::string& pathfragshader);
-       float getWhiteLuminance() const{return white_luminance;}
-       void setWhiteLuminance(const float white_luminance_) {white_luminance = white_luminance_;}
-       float getToneLuminance() const{return tonemap_luminance;}
-       void setToneLuminance(const float tone_luminance_) {tonemap_luminance = tone_luminance_;}
+    bool getInit() const{return isInit;}
+    bool addModel(const std::string& pathmodel, const std::string& pathvertshader,
+                  const std::string& pathfragshader);
+    float getWhiteLuminance() const{return white_luminance;}
+    void setWhiteLuminance(const float white_luminance_) {white_luminance = white_luminance_;}
+    float getToneLuminance() const{return tonemap_luminance;}
+    void setToneLuminance(const float tone_luminance_) {tonemap_luminance = tone_luminance_;}
 
 public:
-        SVRender3D(const int32 wnd_width_, const int32 wnd_height_);
+    SVRender3D(const int32 wnd_width_, const int32 wnd_height_) : wnd_width(wnd_width_), wnd_height(wnd_height_), 
+               aspect_ratio(0.f), texReady(false), white_luminance(1.0), tonemap_luminance(1.0)
+               {}
 
-        SVRender3D& operator=(const SVRender3D&) = delete;
-        SVRender3D(const SVRender3D&) = delete;
-	
-        bool init(const ConfigProjModel& cfg_proj, const std::string& shadersurroundvert, const std::string& shadersurroundfrag,
-                  const std::string& shaderscreenvert, const std::string& shaderscreenfrag,
-                  const std::string shaderblackrectvert = std::string(), const std::string shaderblackrectfrag=std::string());
-        void render(const Camera& cam, const cv::cuda::GpuMat& frame);
+    SVRender3D& operator=(const SVRender3D&) = delete;
+    SVRender3D(const SVRender3D&) = delete;
+
+    bool init(const ConfigProjModel& proj_cfg, const std::string& shadersurroundvert, const std::string& shadersurroundfrag,
+              const std::string& shaderscreenvert, const std::string& shaderscreenfrag,
+              const std::string shaderblackrectvert = std::string(), const std::string shaderblackrectfrag=std::string());
+    void render(const Camera& cam, const cv::cuda::GpuMat& frame);
 
 private:
-        ConfigProjModel config_bowl;
+        ConfigProjModel proj_cfg_;
+        std::shared_ptr<ProjModelBase> proj_model;
         OGLBuffer OGLbowl;
         OGLBuffer OGLblackRect;
         OGLBuffer OGLquadrender;

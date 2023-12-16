@@ -4,15 +4,9 @@
 #include <opencv2/cudaimgproc.hpp>
 #include <opencv2/cudaarithm.hpp>
 
-SVRender3D::SVRender3D(const int32 wnd_width_, const int32 wnd_height_) :
-    wnd_width(wnd_width_), wnd_height(wnd_height_), aspect_ratio(0.f), texReady(false),
-    white_luminance(1.0), tonemap_luminance(1.0)
-{
-
-}
 
 //! --------------------------------------  初始化  --------------------------------------
-bool SVRender3D::init(const ConfigProjModel& cfg_proj, const std::string& shadersurroundvert, const std::string& shadersurroundfrag,
+bool SVRender3D::init(const ConfigProjModel& proj_cfg, const std::string& shadersurroundvert, const std::string& shadersurroundfrag,
                     const std::string& shaderscreenvert, const std::string& shaderscreenfrag,
                     const std::string shaderblackrectvert, const std::string shaderblackrectfrag)
 {
@@ -21,7 +15,7 @@ bool SVRender3D::init(const ConfigProjModel& cfg_proj, const std::string& shader
 
     aspect_ratio = static_cast<float>(wnd_width) / wnd_height;  // 窗口宽高比
 
-    if (!initBowl(cfg_proj, shadersurroundvert, shadersurroundfrag))
+    if (!initBowl(proj_cfg, shadersurroundvert, shadersurroundfrag))
         return false;
 
     if (!initbowlBlackRect(shaderblackrectvert, shaderblackrectfrag))
@@ -35,7 +29,7 @@ bool SVRender3D::init(const ConfigProjModel& cfg_proj, const std::string& shader
 }
 
 // 初始化 OGLbowl 对象
-bool SVRender3D::initBowl(const ConfigProjModel& cfg_proj, const std::string& shadersurroundvert, const std::string& shadersurroundfrag)
+bool SVRender3D::initBowl(const ConfigProjModel& proj_cfg, const std::string& shadersurroundvert, const std::string& shadersurroundfrag)
 {
     if (!OGLbowl.OGLShader.initShader(shadersurroundvert.c_str(), shadersurroundfrag.c_str())) {  // 传入顶点和片段着色器的路径，用于初始化着色器
         LOG_ERROR("SVRender3D::initBowl", "OGLbowl.OGLShader.initShader() Error !");
@@ -46,12 +40,13 @@ bool SVRender3D::initBowl(const ConfigProjModel& cfg_proj, const std::string& sh
     glGenBuffers(1, &OGLbowl.VBO);  // 生成顶点缓冲对象（VBO）
     glGenBuffers(1, &OGLbowl.EBO);  // 生成元素缓冲对象（EBO）
 
-    config_bowl = cfg_proj;  // ConfigProjModel 结构体赋值
+    proj_cfg_ = proj_cfg;  // ConfigProjModel 结构体赋值
     std::vector<float> data;
     std::vector<uint> idxs;
 
-    BowlParabModel bowl_parab_model(config_bowl);
-    if (!bowl_parab_model.generate_mesh_uv(cfg_proj.vertices_num, data, idxs)) {  // 生成网格数据，存储在 data 和 idxs 向量中
+    // ProjType proj_model(proj_cfg_);
+    proj_model = std::make_shared<BowlParabModel>(proj_cfg_);
+    if (!proj_model->generate_mesh_uv(proj_cfg_.vertices_num, data, idxs)) {  // 生成网格数据，存储在 data 和 idxs 向量中
         LOG_ERROR("SVRender3D::initBowl", "bowl.generate_mesh_uv_hole Error !");
         return false;
     }
@@ -230,7 +225,7 @@ void SVRender3D::texturePrepare(const cv::cuda::GpuMat& frame)
 // 渲染一个用于显示全景视图的3D碗模型对象
 void SVRender3D::drawSurroundView(const Camera& cam, const cv::cuda::GpuMat& frame)
 {
-    glm::mat4 model_transform = config_bowl.transformation;  // 获取碗模型的变换矩阵
+    glm::mat4 model_transform = proj_cfg_.transformation;  // 获取碗模型的变换矩阵
     auto view = cam.getView();  // 获取摄像机视图矩阵
     auto projection = glm::perspective(glm::radians(cam.getCamZoom()), aspect_ratio, 0.1f, 100.f);  // 创建投影矩阵，使用了摄像机的缩放值、长宽比和近远平面距离
 
@@ -282,7 +277,7 @@ void SVRender3D::drawBlackRect(const Camera& cam)
     const float y_min = 0.08f;
 #else
     constexpr auto bias = 1e-4;
-    const float y_min = config_bowl.y_start + bias;  // 确定矩形的垂直位置
+    const float y_min = proj_cfg_.y_start + bias;  // 确定矩形的垂直位置
 #endif
 
     model_transform = glm::translate(model_transform, glm::vec3(0.f, y_min, 0.f));  // 对模型变换矩阵应用平移变换，将矩形移动到指定的垂直位置
@@ -309,6 +304,5 @@ void SVRender3D::drawScreen(const Camera& cam)
     glBindTexture(GL_TEXTURE_2D, OGLquadrender.framebuffer_tex);  // 绑定之前渲染到帧缓冲对象的纹理，这个纹理现在将用于在四边形上渲染
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);  // 使用 GL_TRIANGLE_STRIP 模式绘制四边形
 }
-
 
 

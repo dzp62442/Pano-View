@@ -52,7 +52,7 @@ public:
     std::string blackrectshadervert = "../shaders/blackrectshadervert.glsl";
     std::string blackrectshaderfrag = "../shaders/blackrectshaderfrag.glsl";
 
-    ConfigProjModel cfg_proj;  // 碗模型参数
+    ConfigProjModel proj_cfg;  // 碗模型参数
 
 private:
     SVConfig()  // 私有构造函数，确保不能直接创建对象
@@ -67,15 +67,15 @@ private:
 
         // 加载碗模型参数
         glm::mat4 transform_bowl(1.f);
-        cfg_proj.transformation = transform_bowl;
-        cfg_proj.disk_radius = yaml["cfg_proj"]["disk_radius"].as<float>();
-        cfg_proj.parab_radius = yaml["cfg_proj"]["parab_radius"].as<float>(); 
-        cfg_proj.hole_radius = yaml["cfg_proj"]["hole_radius"].as<float>();
-        cfg_proj.a = yaml["cfg_proj"]["a"].as<float>();
-        cfg_proj.b = yaml["cfg_proj"]["b"].as<float>();
-        cfg_proj.c = yaml["cfg_proj"]["c"].as<float>();
-        cfg_proj.vertices_num = yaml["cfg_proj"]["vertices_num"].as<float>();
-        cfg_proj.y_start = yaml["cfg_proj"]["y_start"].as<float>();
+        proj_cfg.transformation = transform_bowl;
+        proj_cfg.disk_radius = yaml["proj_cfg"]["disk_radius"].as<float>();
+        proj_cfg.parab_radius = yaml["proj_cfg"]["parab_radius"].as<float>(); 
+        proj_cfg.hole_radius = yaml["proj_cfg"]["hole_radius"].as<float>();
+        proj_cfg.a = yaml["proj_cfg"]["a"].as<float>();
+        proj_cfg.b = yaml["proj_cfg"]["b"].as<float>();
+        proj_cfg.c = yaml["proj_cfg"]["c"].as<float>();
+        proj_cfg.vertices_num = yaml["proj_cfg"]["vertices_num"].as<float>();
+        proj_cfg.y_start = yaml["proj_cfg"]["y_start"].as<float>();
 
     }
 

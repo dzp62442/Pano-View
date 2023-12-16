@@ -97,7 +97,6 @@ static void processInput(GLFWwindow* window, SVDisplayView* svdisp)
 
 }
 
-
 bool SVDisplayView::init(const int32 wnd_width, const int32 wnd_height, std::shared_ptr<SVRender3D> renderer_)
 {
     if (isInit)
@@ -168,7 +167,6 @@ bool SVDisplayView::render(const cv::cuda::GpuMat& frame)
 }
 
 
-
 void SVDisplayView::resetCameraState()
 {
     cam = Camera(glm::vec3(0.0, 1.7, 1.0), glm::vec3(0.0, 1.0, 0.0));
@@ -214,4 +212,3 @@ bool SVDisplayView::getTVMode() const
 {
     return useDemoTopView;
 }
-
