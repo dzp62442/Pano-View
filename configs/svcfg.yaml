@@ -3,7 +3,7 @@ video_stop: 200  # 视频读取结束帧
 
 video_dir: ../resources/Surround-View/
 
-proj_type: bowl_parab  # 投影模型: bowl_parab - 抛物面球模型, hemi_sphere - 半球面模型, sphere - 球面模型
+proj_type: hemi_sphere  # 投影模型: bowl_parab - 抛物面球模型, drops1 - 水滴模型1, hemi_sphere - 半球面模型, sphere - 球面模型
 proj_cfg:  # 投影模型参数
   inner_radius: 0.4  # 碗底面半径，默认0.4
   radius: 0.7  # 碗顶面半径，默认0.55
@@ -15,3 +15,5 @@ proj_cfg:  # 投影模型参数
   y_start: 1.0  # 此处y轴指天，碗模型从坐标1开始
   x_segment: 100  # 分段数目
   y_segment: 100  # 分段数目
+  max_height: 1.0
+  rad_at_base: 4.0

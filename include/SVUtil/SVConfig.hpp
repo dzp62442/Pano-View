@@ -12,8 +12,9 @@ struct ConfigProjModel
     float vertices_num;
     float y_start = 0.0;
     float x_segment, y_segment;
+    float max_height, rad_at_base;
     glm::mat4 transformation;
-    ConfigProjModel() : a(0.0f), b(0.0f), c(0.0f), inner_radius(0.0f), radius(0.0f), hole_radius(0.0f), vertices_num(0.0f), x_segment(0.0f), y_segment(0.0f) {}
+    ConfigProjModel() : a(0.0f), b(0.0f), c(0.0f), inner_radius(0.0f), radius(0.0f), hole_radius(0.0f), vertices_num(0.0f), x_segment(0.0f), y_segment(0.0f), max_height(0.0f), rad_at_base(0.0f) {}
 
 };
 
@@ -75,6 +76,8 @@ private:
         proj_cfg.y_start = yaml["proj_cfg"]["y_start"].as<float>();
         proj_cfg.x_segment = yaml["proj_cfg"]["x_segment"].as<float>();
         proj_cfg.y_segment = yaml["proj_cfg"]["y_segment"].as<float>();
+        proj_cfg.max_height = yaml["proj_cfg"]["max_height"].as<float>();
+        proj_cfg.rad_at_base = yaml["proj_cfg"]["rad_at_base"].as<float>();
     }
 
     ~SVConfig() = default;
