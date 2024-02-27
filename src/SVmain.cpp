@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
         show_timer.update("sleep");
 
         std::cout << imgNum << "\n";
-        imgNum ++;
+        // imgNum ++;
         if (imgNum > SVConfig::get().video_stop)
             imgNum = SVConfig::get().video_start;
         show_timer.print("SVApp::showPanorama");

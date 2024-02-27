@@ -81,8 +81,9 @@ protected:  // 模型参数
 
 public:  // 构造函数
     BowlParabModel() {}
-    BowlParabModel(const ConfigProjModel& proj_cfg, const float center[3] = default_center) : inner_rad(proj_cfg.inner_radius), rad(proj_cfg.radius),
-        param_a(proj_cfg.a), param_b(proj_cfg.b), param_c(proj_cfg.c), hole_rad(proj_cfg.hole_radius)
+    BowlParabModel(const ConfigProjModel& proj_cfg, const float center[3] = default_center) : 
+        inner_rad(proj_cfg.inner_radius), rad(proj_cfg.radius), hole_rad(proj_cfg.hole_radius),
+        param_a(proj_cfg.a), param_b(proj_cfg.b), param_c(proj_cfg.c)
     {
         cen[0] = center[0];
         cen[1] = center[1];
