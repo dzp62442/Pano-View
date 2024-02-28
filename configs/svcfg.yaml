@@ -3,7 +3,7 @@ video_stop: 200  # 视频读取结束帧
 
 video_dir: ../resources/Surround-View/
 
-proj_type: drop  # 投影模型: bowl_parab - 抛物面球模型, drop - 水滴模型, hemi_sphere - 半球面模型, sphere - 球面模型
+proj_type: burger # 投影模型: bowl_parab - 抛物面球模型, drop - 水滴模型, hemi_sphere - 半球面模型, sphere - 球面模型
 
 
 proj_cfg:  # 投影模型参数
@@ -11,12 +11,12 @@ proj_cfg:  # 投影模型参数
   #! 其他待配置的通用参数：车模型的缩放尺度、车模型的位置朝向、观察相机的位置朝向
   vertices_num: 750  # generate_mesh_uv 函数的参数 max_size_vert，默认750
   y_start: 1.0  # 此处y轴指天，黑色矩形的位置
-  top_black_height_scale: 0.8  # 全景图顶部黑色矩形的高度比例
+  top_black_height_scale: 0.2  # 全景图顶部黑色矩形的高度比例
   bottom_black_height_scale: 0.2  # 全景图底部黑色矩形的高度比例
   # 碗模型参数
   inner_radius: 0.4  # 碗底面半径，默认0.4
   radius: 0.7  # 碗顶面半径，默认0.55
-  hole_radius: 0.13  # 碗底洞口半径，默认0.08
+  hole_radius: 0.03  # 碗底洞口半径，默认0.08
   a: 0.4  # 默认0.4
   b: 0.4  # 默认0.4
   c: 0.2  # 默认0.2，可选0.25
@@ -26,3 +26,6 @@ proj_cfg:  # 投影模型参数
   # 水滴模型参数
   max_height: 1.0
   rad_at_base: 4.0
+  # 汉堡模型参数
+  R_burger: 2.0
+  d_burger: 1.0

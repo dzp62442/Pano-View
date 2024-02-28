@@ -241,6 +241,7 @@ bool DropModel::generate_mesh_(const float max_size_vert, std::vector<float>& ve
         }
     }
 
+    std::cout << max_size_vert << " " << grid_size << " " << vertices_size << std::endl;
 
     /*
         生成网格的索引，用于确定如何将顶点组合成三角形
@@ -253,6 +254,146 @@ bool DropModel::generate_mesh_(const float max_size_vert, std::vector<float>& ve
 
 // 生成水滴网格的索引，索引决定了如何将顶点组合成三角形以构成网格
 void DropModel::generate_indices_(std::vector<uint>& indices, const uint grid_size, const uint idx_min_y, const int32 last_vert) 
+{
+    bool oddRow = false;  // 判断当前行是奇数行还是偶数行
+
+    for (uint y = 0; y < grid_size - 1; ++y) {  // 遍历网格的每一行，除了最后一行（因为它没有下一行来形成三角形）
+        if (!oddRow) {  // 偶数行: y == 0, y == 2; and so on
+            for (uint x = 0; x < grid_size; ++x) {
+                auto current = y * grid_size + x;
+                auto next = (y + 1) * grid_size + x;
+                indices.push_back(current);
+                indices.push_back(next);
+            }
+        }
+        else {  // 奇数行: y == 1, y == 3; and so on
+            for (int x = grid_size - 1; x >= 0; --x) {
+                auto current = (y + 1) * grid_size + x;
+                auto prev = y * grid_size + x;
+                indices.push_back(current);
+                indices.push_back(prev);
+            }
+        }
+        oddRow = !oddRow;
+    }
+}
+
+
+//! ---------------------------------------------- 汉堡模型 ----------------------------------------------
+
+// 生成汉堡网格的顶点和索引
+bool BurgerModel::generate_mesh_(const float max_size_vert, std::vector<float>& vertices, std::vector<uint>& indices)
+{
+    // 参数校验
+    if (fabs(R_burger) <= epsilon || fabs(d_burger) <= epsilon)
+        return false;
+    if (set_hole && hole_rad <= 0.f)
+        return false;
+
+    // 初始化顶点和索引数组
+    std::vector<float> x_grid, y_grid, z_grid;
+    vertices.clear();
+    indices.clear();
+
+    // 生成纹理坐标 (u, v) [0, 1]
+    std::vector<float> texture_u = meshgen::linspace(0.f, (1.f + eps_uv), max_size_vert);
+    auto texture_v = texture_u;
+
+    // 绘制底部的同心圆圆盘
+    auto r_disk = meshgen::linspace(hole_rad, R_burger - d_burger, max_size_vert/3);
+    auto theta_disk = meshgen::linspace(0.f, polar_coord, max_size_vert);  // [0, 2*PI]
+    auto mesh_pair_disk = meshgen::meshgrid(r_disk, theta_disk);  // 创建一个网格，每个点由一个高度值和一个角度值组成
+    auto R_disk = std::get<0>(mesh_pair_disk);  // 从网格对中取第一个元素，即所有网格点的高度值
+    auto THETA_disk = std::get<1>(mesh_pair_disk);  // 从网格对中取第二个元素，即所有网格点的角度值
+    size_t grid_size_disk = R_disk.size();
+    for (size_t i = 0; i < R_disk.size(); ++i) {
+        for (int j = 0; j < THETA_disk.size(); ++j) {
+            auto x = R_disk(i, j) * cos(THETA_disk(i, j));
+            auto z = R_disk(i, j) * sin(THETA_disk(i, j));
+            auto y = 0;
+            x_grid.push_back(x);
+            z_grid.push_back(z);
+            y_grid.push_back(y);
+        }
+    }
+
+    // 绘制底部小球面
+    auto t1 = meshgen::linspace(0.0f, d_burger, max_size_vert/3);
+    auto theta1 = meshgen::linspace(0.0f, polar_coord, max_size_vert);  // [0, 2*PI]
+    auto mesh_pair1 = meshgen::meshgrid(t1, theta1);  // 创建一个网格，每个点由一个高度值和一个角度值组成
+    auto T1 = std::get<0>(mesh_pair1);  // 从网格对中取第一个元素，即所有网格点的高度值
+    auto THETA1 = std::get<1>(mesh_pair1);  // 从网格对中取第二个元素，即所有网格点的角度值
+    size_t grid_size1 = T1.size();
+    for (size_t i = 0; i < T1.size(); ++i) {
+        for (int j = 0; j < THETA1.size(); ++j) {
+            auto r = sqrt(d_burger * d_burger - (d_burger - T1(i, j)) * (d_burger - T1(i, j))) + R_burger - d_burger;
+            auto x = r * cos(THETA_disk(i, j));
+            auto z = r * sin(THETA_disk(i, j));
+            auto y = T1(i, j);
+            x_grid.push_back(x);
+            z_grid.push_back(z);
+            y_grid.push_back(y);
+        }
+    }
+
+    // 绘制顶部大球面
+    auto t2 = meshgen::linspace(d_burger, d_burger + R_burger, max_size_vert/3);
+    auto theta2 = meshgen::linspace(0.0f, polar_coord, max_size_vert);  // [0, 2*PI]
+    auto mesh_pair2 = meshgen::meshgrid(t2, theta2);  // 创建一个网格，每个点由一个高度值和一个角度值组成
+    auto T2 = std::get<0>(mesh_pair2);  // 从网格对中取第一个元素，即所有网格点的高度值
+    auto THETA2 = std::get<1>(mesh_pair2);  // 从网格对中取第二个元素，即所有网格点的角度值
+    size_t grid_size2 = T2.size();
+    for (size_t i = 0; i < T2.size(); ++i) {
+        for (int j = 0; j < THETA2.size(); ++j) {
+            auto r = sqrt(R_burger * R_burger - (T2(i, j) - d_burger) * (T2(i, j) - d_burger));
+            auto x = r * cos(THETA_disk(i, j));
+            auto z = r * sin(THETA_disk(i, j));
+            auto y = T2(i, j);
+            x_grid.push_back(x);
+            z_grid.push_back(z);
+            y_grid.push_back(y);
+        }
+    }
+
+    // 生成汉堡网格顶点数据
+    auto grid_size = THETA2.size();
+    auto half_grid = grid_size / 2;  // 网格尺寸的一半，用于纹理坐标计算
+    auto vertices_size = 0;  // 用于记录顶点数组的大小
+    auto offset_idx_min_y = 0;
+    for (size_t i = 0; i < grid_size; ++i) {
+        for (size_t j = 0; j < grid_size; ++j) {
+            auto x = x_grid[j + i * grid_size];
+            auto z = z_grid[j + i * grid_size];
+            auto y = y_grid[j + i * grid_size];
+
+            vertices.push_back(x + cen[0]);
+            vertices.push_back(y + cen[1]);
+            vertices.push_back(z + cen[2]);
+            vertices_size += 3;  // 添加顶点到顶点数组
+
+            if (useUV) {  // 处理纹理坐标（如果需要）
+                auto u = texture_u[j];  // 从 texture_u 向量中获取当前列 j 的 u 纹理坐标
+                auto v = texture_v[i];  // 从 texture_v 向量中获取当前行 i 的 v 纹理坐标
+                if (i == 0 && j == 0 && !set_hole)  // 当处理网格的中心点（即第一行第一列，i 和 j 都为 0）且没有设置中心洞（!set_hole）时，进行特殊处理
+                    u = texture_u[half_grid];  // 将 u 坐标设置为 texture_u 中间点的值，这是为了调整中心点的纹理坐标
+                vertices.push_back(u);
+                vertices.push_back(v);
+            }
+        }
+    }
+
+
+    /*
+        生成网格的索引，用于确定如何将顶点组合成三角形
+    */
+    int32 last_vert = vertices_size / _num_vertices;  // 顶点数组中最后一个顶点的索引
+    generate_indices_(indices, grid_size, 0, last_vert);
+
+    return true;
+}
+
+// 生成水滴网格的索引，索引决定了如何将顶点组合成三角形以构成网格
+void BurgerModel::generate_indices_(std::vector<uint>& indices, const uint grid_size, const uint idx_min_y, const int32 last_vert) 
 {
     bool oddRow = false;  // 判断当前行是奇数行还是偶数行
 

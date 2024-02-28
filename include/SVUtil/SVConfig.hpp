@@ -14,6 +14,7 @@ struct ConfigProjModel
     float hole_radius = 0.08;
     float x_segment = 100, y_segment = 100;
     float max_height = 1, rad_at_base = 4;
+    float R_burger = 4, d_burger = 2;
     ConfigProjModel() {}
 };
 
@@ -76,6 +77,8 @@ private:
         proj_cfg.y_segment = yaml["proj_cfg"]["y_segment"].as<float>();
         proj_cfg.max_height = yaml["proj_cfg"]["max_height"].as<float>();
         proj_cfg.rad_at_base = yaml["proj_cfg"]["rad_at_base"].as<float>();
+        proj_cfg.R_burger = yaml["proj_cfg"]["R_burger"].as<float>();
+        proj_cfg.d_burger = yaml["proj_cfg"]["d_burger"].as<float>();
     }
 
     ~SVConfig() = default;

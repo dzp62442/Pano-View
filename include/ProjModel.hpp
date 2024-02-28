@@ -140,6 +140,40 @@ protected:  // 具体实现模型生成
 };
 
 
+//! ---------------------------------------------- 汉堡模型 ----------------------------------------------
+class BurgerModel : public ProjModelBase
+{
+protected:  // 模型参数
+    float R_burger;  // 顶部大球半径
+    float d_burger;  // 底部小球半径
+    float hole_rad;  // 模型底面中心的洞的半径
+
+public:  // 构造函数
+    BurgerModel() {}
+    BurgerModel(const ConfigProjModel& proj_cfg, const float center[3] = default_center) : 
+        R_burger(proj_cfg.R_burger), d_burger(proj_cfg.d_burger), hole_rad(proj_cfg.hole_radius)
+    {
+        cen[0] = center[0];
+        cen[1] = center[1];
+        cen[2] = center[2];
+
+        // 是否在模型底面中心设置一个洞
+        if (hole_rad > 0) {
+            set_hole = true;
+        }
+        else {
+            set_hole = false;
+            hole_rad = 0;
+        }
+    }
+
+protected:  // 具体实现模型生成
+    bool generate_mesh_(const float max_size_vert, std::vector<float>& vertices, std::vector<uint>& indices) override;
+    void generate_indices_(std::vector<uint>& indices, const uint grid_size, const uint idx_min_y, const int32 last_vert) override;
+
+};
+
+
 //! ---------------------------------------------- 半球面模型 ----------------------------------------------
 class HemiSphereModel : public ProjModelBase
 {

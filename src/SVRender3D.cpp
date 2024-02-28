@@ -49,6 +49,8 @@ bool SVRender3D::initProjModel(const std::string& shadersurroundvert, const std:
         proj_model = std::make_shared<BowlParabModel>(proj_cfg);
     else if (proj_type == "drop")
         proj_model = std::make_shared<DropModel>(proj_cfg);
+    else if (proj_type == "burger")
+        proj_model = std::make_shared<BurgerModel>(proj_cfg);
     else if (proj_type == "hemi_sphere")
         proj_model = std::make_shared<HemiSphereModel>(proj_cfg);
     else if (proj_type == "sphere")
