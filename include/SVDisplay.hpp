@@ -1,6 +1,11 @@
 #pragma once
 #include <memory>
 #include <stdint.h>
+#include <ctime>
+#include <iomanip>
+#include <sstream>
+#include <unistd.h>
+#include <stdlib.h>
 
 #include <ProjModel.hpp>
 #include <SVRender3D.hpp>
@@ -45,6 +50,8 @@ public:
     void setTVMode(const bool topview);
     bool getTVMode() const;
     void resetCameraState();
+    int getWindowWidth() const { return width; }
+    int getWindowHeight() const { return height; }
 };
 
 

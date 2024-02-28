@@ -95,6 +95,34 @@ static void processInput(GLFWwindow* window, SVDisplayView* svdisp)
         cam.processKeyboard(Camera_Movement::RIGHT, const_speed);
     }
 
+    // 按空格保存渲染图像
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+        int width = svdisp->getWindowWidth();
+        int height = svdisp->getWindowHeight();
+        // 读取数据
+        GLubyte* pixels = new GLubyte[width * height * 3]; // 3 代表 RGB
+        glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+        cv::Mat image(height, width, CV_8UC3, pixels);
+        // 处理图像
+        cv::cvtColor(image, image, cv::COLOR_RGB2BGR);
+        cv::flip(image, image, 0); // 水平翻转，0代表沿x轴翻转
+        // 保存图像
+        std::string save_dir = SVConfig::get().video_dir + "3d-render/";
+        if (access(save_dir.c_str(), 0)){  // 判断文件夹是否存在，不存在则创建
+            LOG_DEBUG("SVDisplay::processInput", "Folder to save 3d-render images not exist! mkdir.");
+            std::string command = "mkdir -p " + save_dir;
+            system(command.c_str());
+        }
+        std::time_t now = std::time(nullptr);  // 获取当前时间
+        std::tm* now_tm = std::localtime(&now);  // 将time_t转换为tm结构体
+        std::stringstream ss;  // 创建一个字符串流
+        ss << std::put_time(now_tm, "%Y-%m-%d %H:%M:%S");  // 使用put_time将tm结构体格式化为字符串
+        std::string time_str = ss.str();  // 从字符串流中获取字符串
+        cv::imwrite(save_dir+time_str+".png", image);
+        LOG_DEBUG("SVDisplay::processInput", "Save 3d-render image to %s.", save_dir.c_str());
+        delete[] pixels;
+    }
+
 }
 
 bool SVDisplayView::init(const int32 wnd_width, const int32 wnd_height, std::shared_ptr<SVRender3D> renderer_)

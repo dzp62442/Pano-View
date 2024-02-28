@@ -1,7 +1,7 @@
 video_start: 160  # 视频读取起始帧
 video_stop: 200  # 视频读取结束帧
 
-video_dir: ../resources/Surround-View/
+video_dir: ../data/RealTractor3/ex_0_6/
 
 proj_type: burger # 投影模型: bowl_parab - 抛物面球模型, drop - 水滴模型, burger - 汉堡模型, hemi_sphere - 半球面模型, sphere - 球面模型
 
