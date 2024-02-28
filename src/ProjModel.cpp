@@ -425,8 +425,8 @@ bool HemiSphereModel::generate_mesh_(const float max_size_vert, std::vector<floa
     indices.clear();
 
     // 生成顶点，每个顶点由其空间坐标（xPos, yPos, zPos）和纹理坐标（xSegm, ySegm）组成
-    for(int y = 0; y <= y_segment; ++y) {  // 遍历半球体网格的纬度
-        for(int x = 0; x <= x_segment; ++x) {  // 遍历半球体网格的经度
+    for(int y = 0; y <= y_segment; ++y) {  // 遍历半球面网格的纬度
+        for(int x = 0; x <= x_segment; ++x) {  // 遍历半球面网格的经度
             // 计算当前顶点在纹理图像上的位置
             float xSegm = (float)x / (float)x_segment;
             float ySegm = (float)y / (float)y_segment;
@@ -446,7 +446,6 @@ bool HemiSphereModel::generate_mesh_(const float max_size_vert, std::vector<floa
     // 生成网格的索引，用于确定如何将顶点组合成三角形
     generate_indices_(indices, 0, 0, 0);
     
-
     return true;
 }
 
@@ -470,7 +469,6 @@ void HemiSphereModel::generate_indices_(std::vector<uint>& indices, const uint g
         }
         oddRow = !oddRow;
     }
-
 }
 
 
@@ -483,8 +481,8 @@ bool SphereModel::generate_mesh_(const float max_size_vert, std::vector<float>& 
     indices.clear();
 
     // 生成顶点，每个顶点由其空间坐标（xPos, yPos, zPos）和纹理坐标（xSegm, ySegm）组成
-    for(int y = 0; y <= y_segment; ++y) {  // 遍历半球体网格的纬度
-        for(int x = 0; x <= x_segment; ++x) {  // 遍历半球体网格的经度
+    for(int y = 0; y <= y_segment; ++y) {  // 遍历球面网格的纬度
+        for(int x = 0; x <= x_segment; ++x) {  // 遍历球面网格的经度
             // 计算当前顶点在纹理图像上的位置
             float xSegm = (float)x / (float)x_segment;
             float ySegm = (float)y / (float)y_segment;
@@ -504,7 +502,6 @@ bool SphereModel::generate_mesh_(const float max_size_vert, std::vector<float>& 
     // 生成网格的索引，用于确定如何将顶点组合成三角形
     generate_indices_(indices, 0, 0, 0);
     
-
     return true;
 }
 
@@ -528,5 +525,60 @@ void SphereModel::generate_indices_(std::vector<uint>& indices, const uint grid_
         }
         oddRow = !oddRow;
     }
+}
 
+
+//! ---------------------------------------------- 圆柱面模型 ----------------------------------------------
+
+// 生成圆柱面网格的顶点和索引
+bool CylinderModel::generate_mesh_(const float max_size_vert, std::vector<float>& vertices, std::vector<uint>& indices)
+{
+    vertices.clear();
+    indices.clear();
+
+    // 生成顶点，每个顶点由其空间坐标（xPos, yPos, zPos）和纹理坐标（xSegm, ySegm）组成
+    for(int y = 0; y <= y_segment; ++y) {  // 遍历圆柱面网格的高度
+        for(int x = 0; x <= x_segment; ++x) {  // 遍历圆柱面网格同高度的一圈
+            // 计算当前顶点在纹理图像上的位置
+            float xSegm = (float)x / (float)x_segment;
+            float ySegm = (float)y / (float)y_segment;
+            // 计算顶点的空间坐标
+            float xPos = std::cos(xSegm * 2.0 * PI);
+            float yPos = ySegm;
+            float zPos = std::sin(xSegm * 2.0 * PI);
+            // 添加顶点数据到向量
+            vertices.push_back(xPos);
+            vertices.push_back(yPos);
+            vertices.push_back(zPos);
+            vertices.push_back(xSegm);
+            vertices.push_back(ySegm);
+        }
+    }
+
+    // 生成网格的索引，用于确定如何将顶点组合成三角形
+    generate_indices_(indices, 0, 0, 0);
+    
+    return true;
+}
+
+// 生成圆柱面网格的索引，索引决定了如何将顶点组合成三角形以构成网格
+void CylinderModel::generate_indices_(std::vector<uint>& indices, const uint grid_size, const uint idx_min_y, const int32 last_vert)
+{
+    // 生成索引
+    bool oddRow = false;
+    for(uint y = 0; y < y_segment - 1; ++y) {
+        if (!oddRow) {
+            for(uint x = 0; x <= x_segment; ++x) {
+                indices.push_back(y * (x_segment + 1) + x);
+                indices.push_back((y + 1)* (x_segment + 1) + x);
+            }
+        }
+        else {
+            for(int x = x_segment; x >= 0; --x) {
+                indices.push_back((y + 1)* (x_segment + 1) + x);
+                indices.push_back(y * (x_segment + 1) + x);
+            }
+        }
+        oddRow = !oddRow;
+    }
 }
