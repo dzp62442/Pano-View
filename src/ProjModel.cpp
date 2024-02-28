@@ -300,12 +300,11 @@ bool BurgerModel::generate_mesh_(const float max_size_vert, std::vector<float>& 
     auto texture_v = texture_u;
 
     // 绘制底部的同心圆圆盘
-    auto r_disk = meshgen::linspace(hole_rad, R_burger - d_burger, max_size_vert/3);
+    auto r_disk = meshgen::linspace(hole_rad, R_burger - d_burger, max_size_vert/4);
     auto theta_disk = meshgen::linspace(0.f, polar_coord, max_size_vert);  // [0, 2*PI]
     auto mesh_pair_disk = meshgen::meshgrid(r_disk, theta_disk);  // 创建一个网格，每个点由一个高度值和一个角度值组成
     auto R_disk = std::get<0>(mesh_pair_disk);  // 从网格对中取第一个元素，即所有网格点的高度值
     auto THETA_disk = std::get<1>(mesh_pair_disk);  // 从网格对中取第二个元素，即所有网格点的角度值
-    size_t grid_size_disk = R_disk.size();
     for (size_t i = 0; i < R_disk.size(); ++i) {
         for (int j = 0; j < THETA_disk.size(); ++j) {
             auto x = R_disk(i, j) * cos(THETA_disk(i, j));
@@ -318,17 +317,16 @@ bool BurgerModel::generate_mesh_(const float max_size_vert, std::vector<float>& 
     }
 
     // 绘制底部小球面
-    auto t1 = meshgen::linspace(0.0f, d_burger, max_size_vert/3);
+    auto t1 = meshgen::linspace(0.0f, d_burger, max_size_vert/4);
     auto theta1 = meshgen::linspace(0.0f, polar_coord, max_size_vert);  // [0, 2*PI]
     auto mesh_pair1 = meshgen::meshgrid(t1, theta1);  // 创建一个网格，每个点由一个高度值和一个角度值组成
     auto T1 = std::get<0>(mesh_pair1);  // 从网格对中取第一个元素，即所有网格点的高度值
     auto THETA1 = std::get<1>(mesh_pair1);  // 从网格对中取第二个元素，即所有网格点的角度值
-    size_t grid_size1 = T1.size();
     for (size_t i = 0; i < T1.size(); ++i) {
         for (int j = 0; j < THETA1.size(); ++j) {
             auto r = sqrt(d_burger * d_burger - (d_burger - T1(i, j)) * (d_burger - T1(i, j))) + R_burger - d_burger;
-            auto x = r * cos(THETA_disk(i, j));
-            auto z = r * sin(THETA_disk(i, j));
+            auto x = r * cos(THETA1(i, j));
+            auto z = r * sin(THETA1(i, j));
             auto y = T1(i, j);
             x_grid.push_back(x);
             z_grid.push_back(z);
@@ -337,17 +335,16 @@ bool BurgerModel::generate_mesh_(const float max_size_vert, std::vector<float>& 
     }
 
     // 绘制顶部大球面
-    auto t2 = meshgen::linspace(d_burger, d_burger + R_burger, max_size_vert/3);
+    auto t2 = meshgen::linspace(d_burger, d_burger + R_burger, max_size_vert/2);
     auto theta2 = meshgen::linspace(0.0f, polar_coord, max_size_vert);  // [0, 2*PI]
     auto mesh_pair2 = meshgen::meshgrid(t2, theta2);  // 创建一个网格，每个点由一个高度值和一个角度值组成
     auto T2 = std::get<0>(mesh_pair2);  // 从网格对中取第一个元素，即所有网格点的高度值
     auto THETA2 = std::get<1>(mesh_pair2);  // 从网格对中取第二个元素，即所有网格点的角度值
-    size_t grid_size2 = T2.size();
     for (size_t i = 0; i < T2.size(); ++i) {
         for (int j = 0; j < THETA2.size(); ++j) {
             auto r = sqrt(R_burger * R_burger - (T2(i, j) - d_burger) * (T2(i, j) - d_burger));
-            auto x = r * cos(THETA_disk(i, j));
-            auto z = r * sin(THETA_disk(i, j));
+            auto x = r * cos(THETA2(i, j));
+            auto z = r * sin(THETA2(i, j));
             auto y = T2(i, j);
             x_grid.push_back(x);
             z_grid.push_back(z);
