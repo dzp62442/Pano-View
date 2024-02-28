@@ -34,6 +34,8 @@ int main(int argc, char* argv[])
     std::string panorama_path = SVConfig::get().video_dir;
     panorama = cv::imread(panorama_path + std::to_string(imgNum) + ".jpg");
     cv::Size panoramaSize = cv::Size(panorama.cols, panorama.rows);  // 全景图尺寸需保持一致
+    float top_black_height_scale = SVConfig::get().proj_cfg.top_black_height_scale;
+    float bottom_black_height_scale = SVConfig::get().proj_cfg.bottom_black_height_scale;
 
     // 开始浏览
     while(!finish)  
@@ -51,9 +53,17 @@ int main(int argc, char* argv[])
             cv::resize(panorama, panorama, panoramaSize);
         show_timer.update("read panorama");
 
+        //! 全景图上下接入黑色矩形
+        int topAdditionalHeight = static_cast<int>(panoramaSize.height * top_black_height_scale);
+        int bottomAdditionalHeight = static_cast<int>(panoramaSize.height * bottom_black_height_scale);
+        int newHeight = panoramaSize.height + topAdditionalHeight + bottomAdditionalHeight;
+        cv::Mat newPanorama(newHeight, panoramaSize.width, panorama.type(), cv::Scalar::all(10));
+        cv::Rect roi(0, topAdditionalHeight, panoramaSize.width, panoramaSize.height);
+        panorama.copyTo(newPanorama(roi));
+
         // 渲染全景图
         cv::cuda::GpuMat panorama_gpu;
-        panorama_gpu.upload(panorama);
+        panorama_gpu.upload(newPanorama);
         renderer->setWhiteLuminance(1.0);
         renderer->setToneLuminance(1.0);
         if (!display_viewer->render(panorama_gpu)) {

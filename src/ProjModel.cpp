@@ -297,7 +297,7 @@ bool Drops2Model::generate_mesh_(const float max_size_vert, std::vector<float>& 
     std::vector<float> texture_u = meshgen::linspace(0.f, (1.f + eps_uv), max_size_vert);
     auto texture_v = texture_u;
     // 生成高度和角度值
-    auto ts = meshgen::linspace(0.3f, 2.0f, max_size_vert);
+    auto ts = meshgen::linspace(0.0f, PI, max_size_vert);
     auto theta = meshgen::linspace(0.f, polar_coord, max_size_vert);  // [0, 2*PI]
     auto mesh_pair = meshgen::meshgrid(ts, theta);  // 创建一个网格，每个点由一个高度值和一个角度值组成
 

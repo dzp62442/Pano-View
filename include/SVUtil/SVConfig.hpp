@@ -5,17 +5,16 @@
 
 struct ConfigProjModel
 {
-    float a, b, c;
-    float inner_radius;
-    float radius;
-    float hole_radius;
-    float vertices_num;
+    float vertices_num = 750;
     float y_start = 0.0;
-    float x_segment, y_segment;
-    float max_height, rad_at_base;
-    glm::mat4 transformation;
-    ConfigProjModel() : a(0.0f), b(0.0f), c(0.0f), inner_radius(0.0f), radius(0.0f), hole_radius(0.0f), vertices_num(0.0f), x_segment(0.0f), y_segment(0.0f), max_height(0.0f), rad_at_base(0.0f) {}
-
+    float top_black_height_scale = 0.0, bottom_black_height_scale = 0.0;
+    float a = 0.0, b = 0.0, c = 0.0;
+    float inner_radius = 0.4;
+    float radius = 0.55;
+    float hole_radius = 0.08;
+    float x_segment = 100, y_segment = 100;
+    float max_height = 1, rad_at_base = 4;
+    ConfigProjModel() {}
 };
 
 // 使用单例模式构建全局参数类
@@ -49,13 +48,12 @@ public:
     std::string blackrectshadervert = "../shaders/blackrectshadervert.glsl";
     std::string blackrectshaderfrag = "../shaders/blackrectshaderfrag.glsl";
 
-    ConfigProjModel proj_cfg;  // 碗模型参数
+    ConfigProjModel proj_cfg;  // 投影模型参数
 
 private:
     SVConfig()  // 私有构造函数，确保不能直接创建对象
     {
         YAML::Node yaml = YAML::LoadFile("../configs/svcfg.yaml");
-
 
         video_start = yaml["video_start"].as<int>();
         video_stop = yaml["video_stop"].as<int>();
@@ -63,17 +61,17 @@ private:
         video_dir = yaml["video_dir"].as<std::string>();
         proj_type = yaml["proj_type"].as<std::string>();
 
-        // 加载碗模型参数
-        glm::mat4 transform_bowl(1.f);
-        proj_cfg.transformation = transform_bowl;
+        // 加载投影模型参数
+        proj_cfg.vertices_num = yaml["proj_cfg"]["vertices_num"].as<float>();
+        proj_cfg.y_start = yaml["proj_cfg"]["y_start"].as<float>();
+        proj_cfg.top_black_height_scale = yaml["proj_cfg"]["top_black_height_scale"].as<float>();
+        proj_cfg.bottom_black_height_scale = yaml["proj_cfg"]["bottom_black_height_scale"].as<float>();
         proj_cfg.inner_radius = yaml["proj_cfg"]["inner_radius"].as<float>();
         proj_cfg.radius = yaml["proj_cfg"]["radius"].as<float>(); 
         proj_cfg.hole_radius = yaml["proj_cfg"]["hole_radius"].as<float>();
         proj_cfg.a = yaml["proj_cfg"]["a"].as<float>();
         proj_cfg.b = yaml["proj_cfg"]["b"].as<float>();
         proj_cfg.c = yaml["proj_cfg"]["c"].as<float>();
-        proj_cfg.vertices_num = yaml["proj_cfg"]["vertices_num"].as<float>();
-        proj_cfg.y_start = yaml["proj_cfg"]["y_start"].as<float>();
         proj_cfg.x_segment = yaml["proj_cfg"]["x_segment"].as<float>();
         proj_cfg.y_segment = yaml["proj_cfg"]["y_segment"].as<float>();
         proj_cfg.max_height = yaml["proj_cfg"]["max_height"].as<float>();

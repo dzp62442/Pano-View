@@ -213,7 +213,7 @@ void SVRender3D::render(const Camera& cam, const cv::cuda::GpuMat& frame)
 
     drawSurroundView(cam, frame);
 
-    drawBlackRect(cam);
+    // drawBlackRect(cam);
 
     drawObjModel(cam);
 
@@ -240,15 +240,11 @@ void SVRender3D::texturePrepare(const cv::cuda::GpuMat& frame)
 // 渲染一个用于显示全景视图的3D投影模型对象
 void SVRender3D::drawSurroundView(const Camera& cam, const cv::cuda::GpuMat& frame)
 {
-    glm::mat4 proj_model_transform = proj_cfg.transformation;  // 获取碗模型的变换矩阵
+    glm::mat4 proj_model_transform(1.f);  // 获取碗模型的变换矩阵
     auto view = cam.getView();  // 获取摄像机视图矩阵
     auto projection = glm::perspective(glm::radians(cam.getCamZoom()), aspect_ratio, 0.1f, 100.f);  // 创建投影矩阵，使用了摄像机的缩放值、长宽比和近远平面距离
 
-#ifdef HEMISPHERE
-    proj_model_transform = glm::scale(proj_model_transform, glm::vec3(3.f, 3.f, 3.f));  // 将模型缩放为3倍
-#else
     proj_model_transform = glm::scale(proj_model_transform, glm::vec3(5.f, 5.f, 5.f));  // 将模型缩放为5倍
-#endif
 
     OGLProjModel.OGLShader.useProgramm();  // 使用碗模型的着色器程序
     OGLProjModel.OGLShader.setMat4("model", proj_model_transform);  // 设置着色器中的 model、view、projection 矩阵
