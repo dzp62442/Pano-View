@@ -47,10 +47,8 @@ bool SVRender3D::initProjModel(const std::string& shadersurroundvert, const std:
     // 初始化投影模型
     if (proj_type == "bowl_parab")
         proj_model = std::make_shared<BowlParabModel>(proj_cfg);
-    else if (proj_type == "drops1")
-        proj_model = std::make_shared<Drops1Model>(proj_cfg);
-    else if (proj_type == "drops2")
-        proj_model = std::make_shared<Drops2Model>(proj_cfg);
+    else if (proj_type == "drop")
+        proj_model = std::make_shared<DropModel>(proj_cfg);
     else if (proj_type == "hemi_sphere")
         proj_model = std::make_shared<HemiSphereModel>(proj_cfg);
     else if (proj_type == "sphere")

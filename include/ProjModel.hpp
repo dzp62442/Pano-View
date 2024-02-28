@@ -106,8 +106,8 @@ protected:  // 具体实现模型生成
 };
 
 
-//! ---------------------------------------------- 水滴模型1 ----------------------------------------------
-class Drops1Model : public ProjModelBase
+//! ---------------------------------------------- 水滴模型 ----------------------------------------------
+class DropModel : public ProjModelBase
 {
 protected:  // 模型参数
     float max_height;  // 最大高度
@@ -115,42 +115,8 @@ protected:  // 模型参数
     float hole_rad;  // 模型底面中心的洞的半径
 
 public:  // 构造函数
-    Drops1Model() {}
-    Drops1Model(const ConfigProjModel& proj_cfg, const float center[3] = default_center) : 
-        max_height(proj_cfg.max_height), rad_at_base(proj_cfg.rad_at_base), hole_rad(proj_cfg.hole_radius)
-    {
-        cen[0] = center[0];
-        cen[1] = center[1];
-        cen[2] = center[2];
-
-        // 是否在模型底面中心设置一个洞
-        if (hole_rad > 0) {
-            set_hole = true;
-        }
-        else {
-            set_hole = false;
-            hole_rad = 0;
-        }
-    }
-
-protected:  // 具体实现模型生成
-    bool generate_mesh_(const float max_size_vert, std::vector<float>& vertices, std::vector<uint>& indices) override;
-    void generate_indices_(std::vector<uint>& indices, const uint grid_size, const uint idx_min_y, const int32 last_vert) override;
-
-};
-
-
-//! ---------------------------------------------- 水滴模型2 ----------------------------------------------
-class Drops2Model : public ProjModelBase
-{
-protected:  // 模型参数
-    float max_height;  // 最大高度
-    float rad_at_base;  // 底部的最大半径
-    float hole_rad;  // 模型底面中心的洞的半径
-
-public:  // 构造函数
-    Drops2Model() {}
-    Drops2Model(const ConfigProjModel& proj_cfg, const float center[3] = default_center) : 
+    DropModel() {}
+    DropModel(const ConfigProjModel& proj_cfg, const float center[3] = default_center) : 
         max_height(proj_cfg.max_height), rad_at_base(proj_cfg.rad_at_base), hole_rad(proj_cfg.hole_radius)
     {
         cen[0] = center[0];
