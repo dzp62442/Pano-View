@@ -110,14 +110,15 @@ protected:  // 具体实现模型生成
 class DropModel : public ProjModelBase
 {
 protected:  // 模型参数
-    float max_height;  // 最大高度
-    float rad_at_base;  // 底部的最大半径
+    float ya, yb, yc, yd;  // y 参数方程系数
+    float ra, rb, rc;  // r 参数方程系数
     float hole_rad;  // 模型底面中心的洞的半径
 
 public:  // 构造函数
     DropModel() {}
     DropModel(const ConfigProjModel& proj_cfg, const float center[3] = default_center) : 
-        max_height(proj_cfg.max_height), rad_at_base(proj_cfg.rad_at_base), hole_rad(proj_cfg.hole_radius)
+        ya(proj_cfg.ya), yb(proj_cfg.yb), yc(proj_cfg.yc), yd(proj_cfg.yd),
+        ra(proj_cfg.ra), rb(proj_cfg.rb), rc(proj_cfg.rc), hole_rad(proj_cfg.hole_radius)
     {
         cen[0] = center[0];
         cen[1] = center[1];

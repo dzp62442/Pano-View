@@ -20,21 +20,15 @@ bool BowlParabModel::generate_mesh_(const float max_size_vert, std::vector<float
     vertices.clear();
     indices.clear();
 
-    /*
-        在极坐标系中准备网格：半径 r 角度 theta
-    */
     // 生成纹理坐标 (u, v) [0, 1]
     std::vector<float> texture_u = meshgen::linspace(0.f, (1.f + eps_uv), max_size_vert);
     auto texture_v = texture_u;
-    // 生成半径和角度值
+    // 在极坐标系中准备网格：半径 r 角度 theta
     auto r = meshgen::linspace(hole_rad, rad, max_size_vert); // min_size = 0.f, max_size = 100.f,
     auto theta = meshgen::linspace(0.f, polar_coord, max_size_vert);  // [0, 2*PI]
     auto mesh_pair = meshgen::meshgrid(r, theta);  // 创建一个网格，每个点由一个半径值和一个角度值组成
 
-    /*
-        转化为笛卡尔坐标
-    */
-    // 初始化坐标向量
+    // 初始化笛卡尔坐标向量
     auto R = std::get<0>(mesh_pair);  // 从网格对中取第一个元素，即所有网格点的半径值
     auto THETA = std::get<1>(mesh_pair);  // 从网格对中取第二个元素，即所有网格点的角度值
     size_t grid_size = R.size();
@@ -72,9 +66,7 @@ bool BowlParabModel::generate_mesh_(const float max_size_vert, std::vector<float
         }
     }
 
-    /*
-        生成碗状网格顶点数据，包括圆盘部分和椭圆抛物面部分
-    */
+    // 生成碗状网格顶点数据，包括圆盘部分和椭圆抛物面部分，并将模型底面平移至 y 为 0 处
     auto half_grid = grid_size / 2;  // 网格尺寸的一半，用于纹理坐标计算
     auto vertices_size = 0;  // 用于记录顶点数组的大小
     auto offset_idx_min_y = 0;
@@ -83,9 +75,9 @@ bool BowlParabModel::generate_mesh_(const float max_size_vert, std::vector<float
             auto x = x_grid[j + i * grid_size];
             auto z = z_grid[j + i * grid_size];
 
-            auto y = min_y;  // y 坐标初始化为 min_y，圆盘和抛物面交界处的高度
+            auto y = 0.f;  // y 坐标初始化为圆盘和抛物面交界处的高度
             if (gt_radius(x, z, inner_rad))  // 若点 (x, z) 在内半径之外
-                y = y_grid[j + i * grid_size];  // y 坐标更新为对应的 y_grid 值，表示点位于抛物面上
+                y = y_grid[j + i * grid_size] - min_y;  // y 坐标更新为对应的 y_grid 值，表示点位于抛物面上
 
             vertices.push_back(x + cen[0]);
             vertices.push_back(y + cen[1]);
@@ -104,9 +96,7 @@ bool BowlParabModel::generate_mesh_(const float max_size_vert, std::vector<float
     }
 
 
-    /*
-        生成网格的索引，用于确定如何将顶点组合成三角形
-    */
+    // 生成网格的索引，用于确定如何将顶点组合成三角形
     idx_min_y -= offset_idx_min_y;
     int32 last_vert = vertices_size / _num_vertices;  // 顶点数组中最后一个顶点的索引
     generate_indices_(indices, grid_size, idx_min_y, last_vert);
@@ -166,7 +156,9 @@ void BowlParabModel::generate_indices_(std::vector<uint>& indices, const uint gr
 bool DropModel::generate_mesh_(const float max_size_vert, std::vector<float>& vertices, std::vector<uint>& indices)
 {
     // 参数校验
-    if (fabs(max_height) <= epsilon || fabs(rad_at_base) <= epsilon)
+    if (ya <= epsilon || yb <= epsilon || yc <= epsilon || yd <= epsilon)
+        return false;
+    if (ra <= epsilon || rb <= epsilon || rc <= epsilon)
         return false;
     if (set_hole && hole_rad <= 0.f)
         return false;
@@ -175,21 +167,15 @@ bool DropModel::generate_mesh_(const float max_size_vert, std::vector<float>& ve
     vertices.clear();
     indices.clear();
 
-    /*
-        在极坐标系中准备网格：高度 t 角度 theta
-    */
     // 生成纹理坐标 (u, v) [0, 1]
     std::vector<float> texture_u = meshgen::linspace(0.f, (1.f + eps_uv), max_size_vert);
     auto texture_v = texture_u;
-    // 生成高度和角度值
+    // 在极坐标系中准备网格：高度 t 角度 theta
     auto ts = meshgen::linspace(0.0f, PI, max_size_vert);
     auto theta = meshgen::linspace(0.f, polar_coord, max_size_vert);  // [0, 2*PI]
     auto mesh_pair = meshgen::meshgrid(ts, theta);  // 创建一个网格，每个点由一个高度值和一个角度值组成
 
-    /*
-        转化为笛卡尔坐标
-    */
-    // 初始化坐标向量
+    // 初始化笛卡尔坐标向量
     auto T = std::get<0>(mesh_pair);  // 从网格对中取第一个元素，即所有网格点的高度值
     auto THETA = std::get<1>(mesh_pair);  // 从网格对中取第二个元素，即所有网格点的角度值
     size_t grid_size = T.size();
@@ -197,15 +183,18 @@ bool DropModel::generate_mesh_(const float max_size_vert, std::vector<float>& ve
     std::vector<float> y_grid;
     std::vector<float> z_grid;
     // 遍历极坐标网格并进行坐标转换
+    auto min_y = 1000.f;  // 记录网格中最小的 y 坐标值
     for (size_t i = 0; i < grid_size; ++i) {
         for (int j = 0; j < grid_size; ++j) {
             auto t = T(i, j);
-            auto y1 = 3 * (1 + cos(t)) * (3 + cos(t)) / (6 + 5 * cos(t));
-            auto r = 4 * (1 + cos(t)) * sin(t) / (6 + 4 * cos(t));
+            auto y1 = ya * (1 + cos(t)) * (yb + cos(t)) / (yc + yd * cos(t));
+            auto r = ra * (1 + cos(t)) * sin(t) / (rb + rc * cos(t));
 
             auto x = r * cos(THETA(i, j));
             auto z = r * sin(THETA(i, j));
-            auto y = 2 - y1;
+            auto y = - y1;
+            if (y < min_y)
+                min_y = y;
             
             x_grid.push_back(x);
             z_grid.push_back(z);
@@ -213,9 +202,7 @@ bool DropModel::generate_mesh_(const float max_size_vert, std::vector<float>& ve
         }
     }
 
-    /*
-        生成水滴网格顶点数据
-    */
+    // 生成水滴网格顶点数据，并将模型底面平移至 y 为 0 处
     auto half_grid = grid_size / 2;  // 网格尺寸的一半，用于纹理坐标计算
     auto vertices_size = 0;  // 用于记录顶点数组的大小
     auto offset_idx_min_y = 0;
@@ -223,7 +210,7 @@ bool DropModel::generate_mesh_(const float max_size_vert, std::vector<float>& ve
         for (size_t j = 0; j < grid_size; ++j) {
             auto x = x_grid[j + i * grid_size];
             auto z = z_grid[j + i * grid_size];
-            auto y = y_grid[j + i * grid_size];
+            auto y = y_grid[j + i * grid_size] - min_y;
 
             vertices.push_back(x + cen[0]);
             vertices.push_back(y + cen[1]);
@@ -243,9 +230,7 @@ bool DropModel::generate_mesh_(const float max_size_vert, std::vector<float>& ve
 
     std::cout << max_size_vert << " " << grid_size << " " << vertices_size << std::endl;
 
-    /*
-        生成网格的索引，用于确定如何将顶点组合成三角形
-    */
+    // 生成网格的索引，用于确定如何将顶点组合成三角形
     int32 last_vert = vertices_size / _num_vertices;  // 顶点数组中最后一个顶点的索引
     generate_indices_(indices, grid_size, 0, last_vert);
 
@@ -379,17 +364,14 @@ bool BurgerModel::generate_mesh_(const float max_size_vert, std::vector<float>& 
         }
     }
 
-
-    /*
-        生成网格的索引，用于确定如何将顶点组合成三角形
-    */
+    // 生成网格的索引，用于确定如何将顶点组合成三角形
     int32 last_vert = vertices_size / _num_vertices;  // 顶点数组中最后一个顶点的索引
     generate_indices_(indices, grid_size, 0, last_vert);
 
     return true;
 }
 
-// 生成水滴网格的索引，索引决定了如何将顶点组合成三角形以构成网格
+// 生成汉堡网格的索引，索引决定了如何将顶点组合成三角形以构成网格
 void BurgerModel::generate_indices_(std::vector<uint>& indices, const uint grid_size, const uint idx_min_y, const int32 last_vert) 
 {
     bool oddRow = false;  // 判断当前行是奇数行还是偶数行

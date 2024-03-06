@@ -6,14 +6,14 @@
 struct ConfigProjModel
 {
     float vertices_num = 750;
-    float y_start = 0.0;
     float top_black_height_scale = 0.0, bottom_black_height_scale = 0.0;
     float a = 0.0, b = 0.0, c = 0.0;
     float inner_radius = 0.4;
     float radius = 0.55;
     float hole_radius = 0.08;
     float x_segment = 100, y_segment = 100;
-    float max_height = 1, rad_at_base = 4;
+    float ya = 3, yb = 2, yc = 5, yd = 4;
+    float ra = 3, rb = 5, rc = 4;
     float R_burger = 4, d_burger = 2;
     ConfigProjModel() {}
 };
@@ -64,7 +64,6 @@ private:
 
         // 加载投影模型参数
         proj_cfg.vertices_num = yaml["proj_cfg"]["vertices_num"].as<float>();
-        proj_cfg.y_start = yaml["proj_cfg"]["y_start"].as<float>();
         proj_cfg.top_black_height_scale = yaml["proj_cfg"]["top_black_height_scale"].as<float>();
         proj_cfg.bottom_black_height_scale = yaml["proj_cfg"]["bottom_black_height_scale"].as<float>();
         proj_cfg.inner_radius = yaml["proj_cfg"]["inner_radius"].as<float>();
@@ -75,8 +74,13 @@ private:
         proj_cfg.c = yaml["proj_cfg"]["c"].as<float>();
         proj_cfg.x_segment = yaml["proj_cfg"]["x_segment"].as<float>();
         proj_cfg.y_segment = yaml["proj_cfg"]["y_segment"].as<float>();
-        proj_cfg.max_height = yaml["proj_cfg"]["max_height"].as<float>();
-        proj_cfg.rad_at_base = yaml["proj_cfg"]["rad_at_base"].as<float>();
+        proj_cfg.ya = yaml["proj_cfg"]["ya"].as<float>();
+        proj_cfg.yb = yaml["proj_cfg"]["yb"].as<float>();
+        proj_cfg.yc = yaml["proj_cfg"]["yc"].as<float>();
+        proj_cfg.yd = yaml["proj_cfg"]["yd"].as<float>();
+        proj_cfg.ra = yaml["proj_cfg"]["ra"].as<float>();
+        proj_cfg.rb = yaml["proj_cfg"]["rb"].as<float>();
+        proj_cfg.rc = yaml["proj_cfg"]["rc"].as<float>();
         proj_cfg.R_burger = yaml["proj_cfg"]["R_burger"].as<float>();
         proj_cfg.d_burger = yaml["proj_cfg"]["d_burger"].as<float>();
     }

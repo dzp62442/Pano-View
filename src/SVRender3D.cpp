@@ -195,7 +195,7 @@ bool SVRender3D::addObjModel(const std::string& pathmodel, const std::string& pa
     // 设置模型变换并添加到变换列表中
     glm::mat4 transform_car(1.f);
     // 此处y轴指天，将车模型放在碗模型的地面中央
-    transform_car = glm::translate(transform_car, glm::vec3(0.f, 1.01f, 0.f));
+    transform_car = glm::translate(transform_car, glm::vec3(0.f, 0.1f, 0.f));
     // 控制车身旋转，采用旋转角+旋转轴表示，此处z轴指天
     transform_car = glm::rotate(transform_car, glm::radians(-80.f), glm::vec3(0.f, 1.f, 0.f));  // 调节绕y轴旋转角度来控制车身朝向
     // 控制车身缩放，默认0.002
@@ -286,14 +286,9 @@ void SVRender3D::drawBlackRect(const Camera& cam)
 {
     glm::mat4 model_transform(1.f);  // 创建一个单位模型变换矩阵
 
-#ifdef HEMISPHERE
-    const float y_min = 0.08f;
-#else
-    constexpr auto bias = 1e-4;
-    const float y_min = proj_cfg.y_start + bias;  // 确定矩形的垂直位置
-#endif
+    const float y_black_rect = 0.1f;  // 确定矩形的垂直位置
 
-    model_transform = glm::translate(model_transform, glm::vec3(0.f, y_min, 0.f));  // 对模型变换矩阵应用平移变换，将矩形移动到指定的垂直位置
+    model_transform = glm::translate(model_transform, glm::vec3(0.f, y_black_rect, 0.f));  // 对模型变换矩阵应用平移变换，将矩形移动到指定的垂直位置
 
     auto view = cam.getView();
     auto projection = glm::perspective(glm::radians(cam.getCamZoom()), aspect_ratio, 0.1f, 100.f);
