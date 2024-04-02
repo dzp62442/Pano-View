@@ -15,3 +15,41 @@
 - `glGenTextures`：生成纹理对象。纹理对象用于存储纹理数据，如2D纹理、3D纹理或立方体贴图。纹理可以用于多种目的，如给物体添加细节、存储帧缓冲的输出等。
 
 - `glGenRenderbuffers`：生成渲染缓冲对象（Renderbuffer Object, RBO）。RBO通常用于存储帧缓冲对象的深度和模板数据。与纹理不同，渲染缓冲对象通常用于不需要采样的数据，如深度测试和模板测试。
+
+## 推荐配置参数
+
+碗模型
+```yaml
+  top_black_height_scale: 0.0  # 全景图顶部黑色矩形的高度比例
+  bottom_black_height_scale: 0.2  # 全景图底部黑色矩形的高度比例
+  # 碗模型参数
+  inner_radius: 0.3  # 碗底面半径，默认0.4
+  radius: 0.7  # 碗顶面半径，默认0.55
+  hole_radius: 0.03  # 碗底洞口半径，默认0.08
+  a: 0.4  # 默认0.4
+  b: 0.4  # 默认0.4
+  c: 0.2  # 默认0.2，可选0.25
+```
+
+汉堡模型
+```yaml
+  top_black_height_scale: 0.6  # 全景图顶部黑色矩形的高度比例
+  bottom_black_height_scale: 0.3  # 全景图底部黑色矩形的高度比例
+  # 汉堡模型参数
+  R_burger: 1.0
+  d_burger: 0.5
+```
+
+水滴模型
+```yaml
+  top_black_height_scale: 0.7  # 全景图顶部黑色矩形的高度比例
+  bottom_black_height_scale: 0.3  # 全景图底部黑色矩形的高度比例
+  # 水滴模型参数
+  ya: 3
+  yb: 3
+  yc: 6
+  yd: 5
+  ra: 4
+  rb: 5
+  rc: 4
+```
