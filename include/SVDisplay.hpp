@@ -30,6 +30,7 @@ private:
     std::shared_ptr<SVRender3D> renderer;
     bool isInit = false;
     bool useDemoSurroundView = false, useDemoTopView = false;
+    float abs_yaw_sv_mode = 0.0;  // surround view 模式下的绝对航向角（角度）
 
 protected:
     void demoSVMode(Camera& camera);

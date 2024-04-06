@@ -93,6 +93,18 @@ public:
         updateCameraVectors();
     }
 
+
+    // 视线始终指向场景中心
+    void processAbsAxis(float yaw_abs)
+    {
+        yaw = yaw_abs;
+        updateCameraVectors();
+        sceneCenter = glm::vec3(0.f, 0.f, 0.f);
+        float distanceToCenter = 0.8f; // 根据需要调整这个值
+        // camPosition = sceneCenter - camFront * distanceToCenter + camUp * 0.7f;
+        camPosition = sceneCenter - camFront * distanceToCenter + camUp * 0.63f;  // 根据需要调整这个值
+    }
+
     /*
     *  processes input data from handlers mouse scroll
     */
@@ -135,6 +147,7 @@ private:
     glm::vec3 camUp;
     glm::vec3 camRight;
     glm::vec3 worldUp;
+    glm::vec3 sceneCenter;
     // Euler's angles for camera moves
     float yaw;
     float pitch;

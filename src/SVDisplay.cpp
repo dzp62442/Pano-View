@@ -202,10 +202,11 @@ void SVDisplayView::resetCameraState()
 
 void SVDisplayView::demoSVMode(Camera& camera)
 {
-    constexpr auto const_speed = 0.03;
-    camera.processKeyboard(Camera_Movement::LEFT, const_speed);
-    constexpr auto xoffset = 15.0;
-    camera.processMouseMovement(xoffset, 0);
+    constexpr auto const_speed = 0.5;
+    abs_yaw_sv_mode += const_speed;
+    if (abs_yaw_sv_mode > 360)
+        abs_yaw_sv_mode = 0;
+    cam.processAbsAxis(abs_yaw_sv_mode);
 }
 
 void SVDisplayView::demoTVMode(Camera& camera)
@@ -220,8 +221,8 @@ void SVDisplayView::setSVMode(const bool demo)
 {
     useDemoSurroundView = demo;
     resetCameraState();
-    cam.setCamPos(glm::vec3(0, 2.5, 2.75));
-    cam.processMouseMovement(0, -310);
+    cam.setCamPos(glm::vec3(0, 2.5, 0.0));
+    abs_yaw_sv_mode = 0;
 }
 
 bool SVDisplayView::getSVMode() const
